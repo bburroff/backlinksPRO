@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { SiteData, SiteEvaluation } from '../types'
+import { evaluateWebsite } from '../utils/ai'
 
 interface WebsiteEvaluatorProps {
   sites: SiteData[]
@@ -9,50 +10,42 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
   const [url, setUrl] = useState('')
   const [evaluating, setEvaluating] = useState(false)
   const [evaluation, setEvaluation] = useState<SiteEvaluation | null>(null)
+  const [evalStep, setEvalStep] = useState(0)
 
   const evaluateSite = async () => {
     if (!url) return
     setEvaluating(true)
-    
-    // Simulate AI evaluation
-    await new Promise(resolve => setTimeout(resolve, 2500))
-    
-    const mockEvaluations: Record<string, Partial<SiteEvaluation>> = {
-      default: {
-        title: url.includes('shop') ? 'E-Commerce & Online Shopping' :
-               url.includes('tech') ? 'Technology & Innovation' :
-               url.includes('health') ? 'Health & Wellness' :
-               'Digital Business Solutions',
-        description: 'A modern website focused on delivering value to its audience through quality content and services.',
-        niche: url.includes('shop') ? 'E-Commerce' :
-               url.includes('tech') ? 'Technology' :
-               url.includes('health') ? 'Healthcare' :
-               'Business & Technology',
-        keywords: ['digital marketing', 'online presence', 'growth strategy', 'content marketing', 'SEO optimization'],
-        tone: 'Professional yet approachable',
-        audience: 'Business professionals, entrepreneurs, and digital enthusiasts aged 25-45',
-        suggestedTopics: [
-          'How to Build a Strong Online Presence in 2026',
-          'The Future of Digital Marketing: Trends to Watch',
-          '5 Strategies to Boost Your Website Traffic Organically',
-          'Why Content Marketing is Essential for Business Growth',
-          'Mastering SEO: A Complete Guide for Beginners',
-        ],
-      }
+    setEvaluation(null)
+    setEvalStep(0)
+
+    // Simulate progressive evaluation
+    const steps = [
+      'Fetching website data...',
+      'Analyzing HTML structure & meta tags...',
+      'Scanning content for keywords & topics...',
+      'Identifying niche & target audience...',
+      'Analyzing competitor landscape...',
+      'Generating content strategy...',
+      'Calculating backlink opportunities...',
+      'Compiling final report...',
+    ]
+
+    for (let i = 0; i < steps.length; i++) {
+      setEvalStep(i + 1)
+      await new Promise(resolve => setTimeout(resolve, 400 + Math.random() * 300))
     }
 
-    setEvaluation({
-      url,
-      ...mockEvaluations.default,
-    } as SiteEvaluation)
+    const result = evaluateWebsite(url)
+    setEvaluation(result)
     setEvaluating(false)
   }
 
-  const matchingSites = sites.filter(site => {
-    if (!evaluation) return []
-    const techSites = ['Technology', 'General']
-    return techSites.includes(site.category) && site.da > 80
-  })
+  const matchingSites = evaluation
+    ? sites.filter(site => {
+        const techCats = ['Technology', 'General', 'Business']
+        return techCats.includes(site.category) && site.da > 80 && site.status === 'active'
+      })
+    : []
 
   return (
     <div className="animate-slide-in">
@@ -71,6 +64,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://yourwebsite.com"
             className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+            onKeyDown={(e) => e.key === 'Enter' && evaluateSite()}
           />
           <button
             onClick={evaluateSite}
@@ -92,7 +86,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
         </div>
       </div>
 
-      {/* Evaluation Results */}
+      {/* Evaluation Progress */}
       {evaluating && (
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 mb-6">
           <div className="flex items-center gap-4 mb-6">
@@ -101,16 +95,38 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
             </div>
             <div>
               <h3 className="text-white font-semibold">AI Analysis in Progress</h3>
-              <p className="text-sm text-slate-400">Scanning website content, structure, and niche...</p>
+              <p className="text-sm text-slate-400">Scanning {url}...</p>
             </div>
           </div>
           <div className="space-y-3">
-            {['Fetching website data...', 'Analyzing content structure...', 'Identifying niche & keywords...', 'Generating recommendations...'].map((step, i) => (
-              <div key={i} className="flex items-center gap-3" style={{ animationDelay: `${i * 0.5}s` }}>
-                <i className={`fa-solid ${i < 2 ? 'fa-check text-green-400' : 'fa-spinner animate-spin text-indigo-400'}`}></i>
-                <span className={`text-sm ${i < 2 ? 'text-green-400' : 'text-slate-400'}`}>{step}</span>
+            {[
+              'Fetching website data...',
+              'Analyzing HTML structure & meta tags...',
+              'Scanning content for keywords & topics...',
+              'Identifying niche & target audience...',
+              'Analyzing competitor landscape...',
+              'Generating content strategy...',
+              'Calculating backlink opportunities...',
+              'Compiling final report...',
+            ].map((step, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <i className={`fa-solid ${
+                  i < evalStep ? 'fa-check text-green-400' :
+                  i === evalStep ? 'fa-spinner animate-spin text-indigo-400' :
+                  'fa-circle text-slate-700'
+                }`}></i>
+                <span className={`text-sm ${
+                  i < evalStep ? 'text-green-400' :
+                  i === evalStep ? 'text-indigo-400' :
+                  'text-slate-600'
+                }`}>{step}</span>
               </div>
             ))}
+          </div>
+          <div className="mt-4">
+            <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-indigo-500 rounded-full transition-all duration-500" style={{ width: `${(evalStep / 8) * 100}%` }}></div>
+            </div>
           </div>
         </div>
       )}
@@ -137,9 +153,13 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
                 <p className="text-white font-medium text-sm">{evaluation.audience}</p>
               </div>
               <div className="p-4 bg-slate-700/30 rounded-lg">
-                <p className="text-xs text-slate-500 mb-1">Website</p>
-                <p className="text-indigo-400 font-medium text-sm truncate">{evaluation.url}</p>
+                <p className="text-xs text-slate-500 mb-1">Estimated Traffic</p>
+                <p className="text-white font-medium">{evaluation.estimatedTraffic}</p>
               </div>
+            </div>
+            <div className="mt-4 p-4 bg-slate-700/30 rounded-lg">
+              <p className="text-xs text-slate-500 mb-1">Description</p>
+              <p className="text-sm text-slate-300">{evaluation.description}</p>
             </div>
           </div>
 
@@ -154,6 +174,22 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
                 <span key={i} className="px-3 py-1.5 bg-purple-900/30 text-purple-300 rounded-full text-sm border border-purple-700/30">
                   {kw}
                 </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Strategy */}
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <i className="fa-solid fa-chess text-cyan-400"></i>
+              Content Strategy
+            </h3>
+            <div className="space-y-2">
+              {evaluation.contentStrategy.map((strategy, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 bg-slate-700/30 rounded-lg">
+                  <span className="w-6 h-6 bg-cyan-600/30 text-cyan-400 rounded flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+                  <span className="text-sm text-slate-200">{strategy}</span>
+                </div>
               ))}
             </div>
           </div>
@@ -174,26 +210,55 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
             </div>
           </div>
 
+          {/* Backlink Opportunities */}
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <i className="fa-solid fa-link text-green-400"></i>
+              Backlink Opportunities
+            </h3>
+            <div className="flex items-center gap-6 mb-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-400">{evaluation.backlinkOpportunities}</p>
+                <p className="text-xs text-slate-500">Potential Sites</p>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-slate-400">Based on your niche ({evaluation.niche}), there are approximately <strong className="text-white">{evaluation.backlinkOpportunities}</strong> high-quality sites where you could publish articles with backlinks.</p>
+              </div>
+            </div>
+            <div className="p-3 bg-slate-700/30 rounded-lg">
+              <p className="text-xs text-slate-500 mb-2">Competitor sites in your niche:</p>
+              <div className="flex flex-wrap gap-2">
+                {evaluation.competitorSites.map((site, i) => (
+                  <span key={i} className="text-xs px-2 py-1 bg-slate-600 text-slate-300 rounded">{site}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Matching Sites */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <i className="fa-solid fa-bullseye text-green-400"></i>
-              Best Matching Sites ({matchingSites.length})
+              Best Matching Sites from Your List ({matchingSites.length})
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {matchingSites.map((site) => (
-                <div key={site.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
-                  <div className="w-8 h-8 bg-green-600/20 rounded flex items-center justify-center">
-                    <i className="fa-solid fa-check text-green-400 text-xs"></i>
+            {matchingSites.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {matchingSites.map((site) => (
+                  <div key={site.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
+                    <div className="w-8 h-8 bg-green-600/20 rounded flex items-center justify-center">
+                      <i className="fa-solid fa-check text-green-400 text-xs"></i>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-white font-medium">{site.name}</p>
+                      <p className="text-xs text-slate-500">DA {site.da} • {site.category}</p>
+                    </div>
+                    <span className="text-xs text-green-400 bg-green-900/30 px-2 py-1 rounded">Good Match</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-white font-medium">{site.name}</p>
-                    <p className="text-xs text-slate-500">DA {site.da} • {site.category}</p>
-                  </div>
-                  <span className="text-xs text-green-400 bg-green-900/30 px-2 py-1 rounded">Good Match</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500 text-center py-4">No matching sites found in your list. Add more sites in the Article Sites section.</p>
+            )}
           </div>
         </div>
       )}

@@ -28,11 +28,13 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
     const site: SiteData = {
       id: Date.now().toString(),
       name: newSite.name,
-      url: newSite.url,
+      url: newSite.url.startsWith('http') ? newSite.url : `https://${newSite.url}`,
       category: newSite.category,
       da: Math.floor(Math.random() * 40) + 60,
       status: 'active',
       articleCount: 0,
+      signupMethod: 'email',
+      requiresApproval: Math.random() > 0.7,
     }
     setSites([...sites, site])
     setNewSite({ name: '', url: '', category: 'General' })
@@ -43,14 +45,17 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
     const lines = bulkText.split('\n').filter(l => l.trim())
     const newSites: SiteData[] = lines.map(line => {
       const parts = line.split(',').map(p => p.trim())
+      const urlVal = parts[1] || parts[0] || ''
       return {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         name: parts[0] || 'Unknown',
-        url: parts[1] || parts[0] || '',
+        url: urlVal.startsWith('http') ? urlVal : `https://${urlVal}`,
         category: parts[2] || 'General',
         da: Math.floor(Math.random() * 40) + 60,
         status: 'active' as const,
         articleCount: 0,
+        signupMethod: 'email' as const,
+        requiresApproval: Math.random() > 0.7,
       }
     })
     setSites([...sites, ...newSites])
@@ -63,7 +68,7 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
   }
 
   const toggleStatus = (id: string) => {
-    setSites(sites.map(s => s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' } : s))
+    setSites(sites.map(s => s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' as const : 'active' as const } : s))
   }
 
   return (
@@ -71,7 +76,7 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Article Submission Sites</h1>
-          <p className="text-slate-400">Manage sites where articles will be published</p>
+          <p className="text-slate-400">Manage sites where articles will be published ({sites.length} total)</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -102,7 +107,9 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
             className="w-full h-40 bg-slate-900 border border-slate-600 rounded-lg p-4 text-sm text-slate-200 font-mono focus:outline-none focus:border-indigo-500 resize-none"
             placeholder={`Medium, https://medium.com, General
 HubPages, https://hubpages.com, General
-Dev.to, https://dev.to, Technology`}
+Dev.to, https://dev.to, Technology
+LinkedIn, https://linkedin.com/pulse, Business
+Vocal.media, https://vocal.media, Lifestyle`}
           />
           <div className="flex justify-end gap-3 mt-3">
             <button onClick={() => setBulkMode(false)} className="px-4 py-2 text-slate-400 hover:text-white text-sm">Cancel</button>
@@ -127,7 +134,7 @@ Dev.to, https://dev.to, Technology`}
             />
             <input
               type="text"
-              placeholder="URL"
+              placeholder="URL (e.g., https://example.com)"
               value={newSite.url}
               onChange={(e) => setNewSite({ ...newSite, url: e.target.value })}
               className="bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -189,16 +196,19 @@ Dev.to, https://dev.to, Technology`}
               </div>
               <span className={`ml-2 w-2 h-2 rounded-full mt-2 ${site.status === 'active' ? 'bg-green-400' : 'bg-slate-500'}`}></span>
             </div>
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
               <span className="text-xs px-2 py-1 bg-slate-700 text-slate-300 rounded">{site.category}</span>
               <span className="text-xs px-2 py-1 bg-indigo-900/50 text-indigo-400 rounded">DA {site.da}</span>
+              <span className="text-xs px-2 py-1 bg-slate-700 text-slate-400 rounded capitalize">{site.signupMethod}</span>
+              {site.requiresApproval && (
+                <span className="text-xs px-2 py-1 bg-amber-900/50 text-amber-400 rounded">Approval</span>
+              )}
             </div>
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
               <button onClick={() => toggleStatus(site.id)} className="text-xs text-slate-400 hover:text-white">
-                {site.status === 'active' ? 'Disable' : 'Enable'}
+                {site.status === 'active' ? '⏸ Disable' : '▶ Enable'}
               </button>
-              <span className="text-slate-600">|</span>
-              <button onClick={() => removeSite(site.id)} className="text-xs text-red-400 hover:text-red-300">Remove</button>
+              <button onClick={() => removeSite(site.id)} className="text-xs text-red-400 hover:text-red-300">🗑 Remove</button>
             </div>
           </div>
         ))}

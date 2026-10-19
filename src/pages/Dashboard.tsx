@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { SiteData, ArticleData, SubmissionRecord } from '../types'
 
 interface DashboardProps {
@@ -10,14 +11,15 @@ interface DashboardProps {
 export default function Dashboard({ sites, articles, submissions, agentRunning }: DashboardProps) {
   const totalSubmissions = submissions.length
   const publishedCount = submissions.filter(s => s.status === 'published').length
-  const pendingCount = submissions.filter(s => s.status === 'pending' || s.status === 'submitting').length
+  const pendingCount = submissions.filter(s => s.status !== 'published' && s.status !== 'failed').length
   const failedCount = submissions.filter(s => s.status === 'failed').length
+  const successRate = totalSubmissions > 0 ? Math.round((publishedCount / totalSubmissions) * 100) : 0
 
   const stats = [
-    { label: 'Article Sites', value: sites.length, icon: 'fa-globe', color: 'from-blue-500 to-cyan-500' },
+    { label: 'Article Sites', value: sites.filter(s => s.status === 'active').length, icon: 'fa-globe', color: 'from-blue-500 to-cyan-500' },
     { label: 'Articles Generated', value: articles.length, icon: 'fa-file-pen', color: 'from-purple-500 to-pink-500' },
     { label: 'Published', value: publishedCount, icon: 'fa-check-circle', color: 'from-green-500 to-emerald-500' },
-    { label: 'Total Submissions', value: totalSubmissions, icon: 'fa-paper-plane', color: 'from-orange-500 to-amber-500' },
+    { label: 'Success Rate', value: `${successRate}%`, icon: 'fa-chart-line', color: 'from-orange-500 to-amber-500' },
   ]
 
   return (
@@ -74,16 +76,16 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
             </div>
           ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin">
-              {submissions.slice(-5).reverse().map((sub) => (
+              {submissions.slice(-8).reverse().map((sub) => (
                 <div key={sub.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
                   <div className={`w-2 h-2 rounded-full ${
                     sub.status === 'published' ? 'bg-green-400' :
                     sub.status === 'failed' ? 'bg-red-400' :
-                    'bg-yellow-400'
+                    'bg-yellow-400 animate-pulse'
                   }`}></div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-slate-200 truncate">{sub.articleTitle}</p>
-                    <p className="text-xs text-slate-500">{sub.siteName}</p>
+                    <p className="text-xs text-slate-500">{sub.siteName} • {new Date(sub.submittedAt).toLocaleTimeString()}</p>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     sub.status === 'published' ? 'bg-green-900/50 text-green-400' :
@@ -96,7 +98,7 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
           )}
         </div>
 
-        {/* Quick Stats */}
+        {/* Submission Status */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <i className="fa-solid fa-chart-pie text-purple-400"></i>
@@ -133,13 +135,16 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
           </div>
 
           <div className="mt-6 p-4 bg-slate-700/30 rounded-lg">
-            <h4 className="text-sm font-medium text-slate-300 mb-2">Top Performing Sites</h4>
+            <h4 className="text-sm font-medium text-slate-300 mb-3">Top Sites by DA</h4>
             <div className="space-y-2">
-              {sites.slice(0, 3).map((site, i) => (
+              {[...sites].sort((a, b) => b.da - a.da).slice(0, 5).map((site, i) => (
                 <div key={site.id} className="flex items-center gap-2">
                   <span className="text-xs text-slate-500 w-4">{i + 1}.</span>
                   <span className="text-sm text-slate-300 flex-1">{site.name}</span>
-                  <span className="text-xs text-indigo-400">DA {site.da}</span>
+                  <div className="w-20 h-1.5 bg-slate-600 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${site.da}%` }}></div>
+                  </div>
+                  <span className="text-xs text-indigo-400 w-6 text-right">{site.da}</span>
                 </div>
               ))}
             </div>
