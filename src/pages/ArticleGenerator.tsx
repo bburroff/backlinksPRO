@@ -28,7 +28,6 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
     setGeneratedKeywords([])
     setGenerationProgress(0)
 
-    // Simulate progressive generation
     await new Promise(resolve => setTimeout(resolve, 800))
     setGenerationProgress(20)
 
@@ -39,7 +38,6 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
     setGenerationProgress(40)
     setGeneratedKeywords(result.keywords)
 
-    // Simulate typing effect
     const words = result.content.split(' ')
     let currentContent = ''
     for (let i = 0; i < words.length; i++) {
@@ -121,11 +119,11 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Configuration Panel */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-sliders text-indigo-400"></i>
-              Configuration
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-sliders section-icon"></i>
+              <h3 className="section-title">Configuration</h3>
+            </div>
             
             <div className="space-y-4">
               <div>
@@ -135,7 +133,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                   placeholder="https://yourwebsite.com"
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="input"
                 />
               </div>
 
@@ -146,7 +144,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                   value={anchorText}
                   onChange={(e) => setAnchorText(e.target.value)}
                   placeholder="Click here to learn more"
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="input"
                 />
               </div>
 
@@ -157,7 +155,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   placeholder="e.g., Digital Marketing, SEO Tips, Content Strategy"
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="input"
                 />
               </div>
 
@@ -166,7 +164,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="input"
                 >
                   <option>General</option>
                   <option>Technology</option>
@@ -186,7 +184,6 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                   step="100"
                   value={wordCount}
                   onChange={(e) => setWordCount(parseInt(e.target.value))}
-                  className="w-full accent-indigo-500"
                 />
               </div>
 
@@ -196,8 +193,8 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                     <span>Generating...</span>
                     <span>{generationProgress}%</span>
                   </div>
-                  <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full transition-all duration-300" style={{ width: `${generationProgress}%` }}></div>
+                  <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${generationProgress}%` }}></div>
                   </div>
                 </div>
               )}
@@ -206,7 +203,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                 <button
                   onClick={generateArticleHandler}
                   disabled={generating || !targetUrl || !topic}
-                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-sm flex items-center justify-center gap-2"
+                  className="btn-primary w-full flex items-center justify-center gap-2"
                 >
                   {generating ? (
                     <>
@@ -224,7 +221,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                   <button
                     onClick={generateBatch}
                     disabled={generating || !targetUrl}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-sm flex items-center justify-center gap-2"
+                    className="btn-primary w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
                   >
                     <i className="fa-solid fa-layer-group"></i>
                     Batch Generate ({topic.split(',').filter(t => t.trim()).length} articles)
@@ -236,7 +233,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
 
           {/* Backlink Preview */}
           {targetUrl && (
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+            <div className="card p-6">
               <h3 className="text-sm font-semibold text-slate-300 mb-3">Backlink Preview</h3>
               <div className="p-3 bg-slate-900 rounded-lg">
                 <p className="text-xs text-slate-500 mb-1">Link will appear as:</p>
@@ -249,16 +246,16 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
 
         {/* Generated Content */}
         <div className="lg:col-span-2">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 h-full">
+          <div className="card p-6 h-full">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <i className="fa-solid fa-file-lines text-purple-400"></i>
-                Generated Article
-              </h3>
+              <div className="section-header mb-0">
+                <i className="fa-solid fa-file-lines section-icon"></i>
+                <h3 className="section-title">Generated Article</h3>
+              </div>
               {generatedContent && !generating && (
                 <button
                   onClick={saveArticle}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 text-sm font-medium flex items-center gap-2"
+                  className="btn-primary flex items-center gap-2 bg-green-600 hover:bg-green-500"
                 >
                   <i className="fa-solid fa-save"></i>
                   Save to Library
@@ -267,16 +264,16 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
             </div>
 
             {!generatedContent && !generating && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <i className="fa-solid fa-wand-magic-sparkles text-5xl text-slate-600 mb-4"></i>
-                <p className="text-slate-500 mb-2">No article generated yet</p>
-                <p className="text-slate-600 text-sm">Configure settings and click Generate to create an AI-written article</p>
+              <div className="empty-state py-16">
+                <i className="fa-solid fa-wand-magic-sparkles empty-state-icon"></i>
+                <p className="empty-state-title">No article generated yet</p>
+                <p className="empty-state-description">Configure settings and click Generate to create an AI-written article</p>
               </div>
             )}
 
             {(generatedContent || generating) && (
               <div className="prose prose-invert max-w-none">
-                <div className="bg-slate-900 rounded-lg p-6 max-h-[600px] overflow-y-auto scrollbar-thin">
+                <div className="console max-h-[600px] overflow-y-auto scrollbar-thin">
                   <pre className="whitespace-pre-wrap text-sm text-slate-200 font-sans leading-relaxed">
                     {generatedContent || 'Initializing AI model...'}
                     {generating && <span className="animate-pulse text-indigo-400">▊</span>}
@@ -302,11 +299,11 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
 
           {/* Saved Articles */}
           {articles.length > 0 && (
-            <div className="mt-6 bg-slate-800 border border-slate-700 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <i className="fa-solid fa-folder-open text-amber-400"></i>
-                Saved Articles ({articles.length})
-              </h3>
+            <div className="card p-6 mt-6">
+              <div className="section-header">
+                <i className="fa-solid fa-folder-open section-icon"></i>
+                <h3 className="section-title">Saved Articles ({articles.length})</h3>
+              </div>
               <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
                 {articles.map((article) => (
                   <div key={article.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
@@ -315,7 +312,7 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                       <p className="text-sm text-slate-200 truncate">{article.title}</p>
                       <p className="text-xs text-slate-500">{article.wordCount} words • {article.category} • → {article.targetUrl}</p>
                     </div>
-                    <span className="text-xs px-2 py-1 bg-green-900/50 text-green-400 rounded">{article.status}</span>
+                    <span className="badge badge-success">{article.status}</span>
                   </div>
                 ))}
               </div>

@@ -81,14 +81,14 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
         <div className="flex gap-3">
           <button
             onClick={() => setBulkMode(!bulkMode)}
-            className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors text-sm font-medium"
+            className="btn-secondary"
           >
             <i className="fa-solid fa-list mr-2"></i>
             Bulk Add
           </button>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm font-medium"
+            className="btn-primary"
           >
             <i className="fa-solid fa-plus mr-2"></i>
             Add Site
@@ -98,22 +98,22 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
 
       {/* Bulk Add */}
       {bulkMode && (
-        <div className="mb-6 bg-slate-800 border border-slate-700 rounded-xl p-6 animate-slide-in">
+        <div className="card p-6 mb-6 animate-slide-in">
           <h3 className="text-lg font-semibold text-white mb-3">Bulk Import Sites</h3>
-          <p className="text-sm text-slate-400 mb-3">Enter one site per line. Format: <code className="text-indigo-400">Name, URL, Category</code></p>
+          <p className="text-sm text-slate-400 mb-3">Enter one site per line. Format: <code className="text-indigo-400 bg-slate-900 px-2 py-0.5 rounded">Name, URL, Category</code></p>
           <textarea
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
-            className="w-full h-40 bg-slate-900 border border-slate-600 rounded-lg p-4 text-sm text-slate-200 font-mono focus:outline-none focus:border-indigo-500 resize-none"
+            className="input h-40 font-mono resize-none"
             placeholder={`Medium, https://medium.com, General
 HubPages, https://hubpages.com, General
 Dev.to, https://dev.to, Technology
 LinkedIn, https://linkedin.com/pulse, Business
 Vocal.media, https://vocal.media, Lifestyle`}
           />
-          <div className="flex justify-end gap-3 mt-3">
-            <button onClick={() => setBulkMode(false)} className="px-4 py-2 text-slate-400 hover:text-white text-sm">Cancel</button>
-            <button onClick={addBulkSites} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm font-medium">
+          <div className="flex justify-end gap-3 mt-4">
+            <button onClick={() => setBulkMode(false)} className="btn-secondary">Cancel</button>
+            <button onClick={addBulkSites} className="btn-primary">
               Import {bulkText.split('\n').filter(l => l.trim()).length} Sites
             </button>
           </div>
@@ -122,7 +122,7 @@ Vocal.media, https://vocal.media, Lifestyle`}
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="mb-6 bg-slate-800 border border-slate-700 rounded-xl p-6 animate-slide-in">
+        <div className="card p-6 mb-6 animate-slide-in">
           <h3 className="text-lg font-semibold text-white mb-4">Add New Site</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
@@ -130,19 +130,19 @@ Vocal.media, https://vocal.media, Lifestyle`}
               placeholder="Site Name"
               value={newSite.name}
               onChange={(e) => setNewSite({ ...newSite, name: e.target.value })}
-              className="bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="input"
             />
             <input
               type="text"
               placeholder="URL (e.g., https://example.com)"
               value={newSite.url}
               onChange={(e) => setNewSite({ ...newSite, url: e.target.value })}
-              className="bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="input"
             />
             <select
               value={newSite.category}
               onChange={(e) => setNewSite({ ...newSite, category: e.target.value })}
-              className="bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="input"
             >
               <option>General</option>
               <option>Technology</option>
@@ -153,8 +153,8 @@ Vocal.media, https://vocal.media, Lifestyle`}
             </select>
           </div>
           <div className="flex justify-end gap-3 mt-4">
-            <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-slate-400 hover:text-white text-sm">Cancel</button>
-            <button onClick={addSite} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm font-medium">Add Site</button>
+            <button onClick={() => setShowAddForm(false)} className="btn-secondary">Cancel</button>
+            <button onClick={addSite} className="btn-primary">Add Site</button>
           </div>
         </div>
       )}
@@ -167,7 +167,7 @@ Vocal.media, https://vocal.media, Lifestyle`}
             placeholder="Search sites..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="input"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -188,7 +188,7 @@ Vocal.media, https://vocal.media, Lifestyle`}
       {/* Sites Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredSites.map((site) => (
-          <div key={site.id} className="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-slate-600 transition-all group">
+          <div key={site.id} className="card p-5 group">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1 min-w-0">
                 <h3 className="text-white font-semibold truncate">{site.name}</h3>
@@ -197,11 +197,11 @@ Vocal.media, https://vocal.media, Lifestyle`}
               <span className={`ml-2 w-2 h-2 rounded-full mt-2 ${site.status === 'active' ? 'bg-green-400' : 'bg-slate-500'}`}></span>
             </div>
             <div className="flex items-center gap-2 mb-3 flex-wrap">
-              <span className="text-xs px-2 py-1 bg-slate-700 text-slate-300 rounded">{site.category}</span>
-              <span className="text-xs px-2 py-1 bg-indigo-900/50 text-indigo-400 rounded">DA {site.da}</span>
-              <span className="text-xs px-2 py-1 bg-slate-700 text-slate-400 rounded capitalize">{site.signupMethod}</span>
+              <span className="badge bg-slate-700 text-slate-300">{site.category}</span>
+              <span className="badge bg-indigo-900/50 text-indigo-400 border-indigo-700/30">DA {site.da}</span>
+              <span className="badge bg-slate-700 text-slate-400 capitalize">{site.signupMethod}</span>
               {site.requiresApproval && (
-                <span className="text-xs px-2 py-1 bg-amber-900/50 text-amber-400 rounded">Approval</span>
+                <span className="badge bg-amber-900/50 text-amber-400 border-amber-700/30">Approval</span>
               )}
             </div>
             <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -215,9 +215,9 @@ Vocal.media, https://vocal.media, Lifestyle`}
       </div>
 
       {filteredSites.length === 0 && (
-        <div className="text-center py-12">
-          <i className="fa-solid fa-globe text-4xl text-slate-600 mb-3"></i>
-          <p className="text-slate-500">No sites found</p>
+        <div className="empty-state">
+          <i className="fa-solid fa-globe empty-state-icon"></i>
+          <p className="empty-state-title">No sites found</p>
         </div>
       )}
     </div>

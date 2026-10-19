@@ -68,7 +68,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
           <button
             onClick={copyAllLinks}
             disabled={published.length === 0}
-            className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 disabled:opacity-50 transition-colors text-sm font-medium"
+            className="btn-secondary"
           >
             <i className="fa-solid fa-copy mr-2"></i>
             Copy URLs
@@ -76,7 +76,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
           <button
             onClick={copyAllBacklinks}
             disabled={published.length === 0}
-            className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 disabled:opacity-50 transition-colors text-sm font-medium"
+            className="btn-secondary"
           >
             <i className="fa-solid fa-link mr-2"></i>
             Copy Backlinks
@@ -84,7 +84,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
           <button
             onClick={exportCSV}
             disabled={submissions.length === 0}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 transition-colors text-sm font-medium"
+            className="btn-primary"
           >
             <i className="fa-solid fa-download mr-2"></i>
             Export CSV
@@ -94,7 +94,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <div className="stat-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
               <i className="fa-solid fa-paper-plane text-blue-400"></i>
@@ -105,7 +105,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
             </div>
           </div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <div className="stat-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-600/20 rounded-lg flex items-center justify-center">
               <i className="fa-solid fa-check-circle text-green-400"></i>
@@ -116,7 +116,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
             </div>
           </div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <div className="stat-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-yellow-600/20 rounded-lg flex items-center justify-center">
               <i className="fa-solid fa-clock text-yellow-400"></i>
@@ -127,7 +127,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
             </div>
           </div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <div className="stat-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-600/20 rounded-lg flex items-center justify-center">
               <i className="fa-solid fa-xmark text-red-400"></i>
@@ -147,7 +147,7 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
           placeholder="Search by site or article title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+          className="input flex-1"
         />
         <div className="flex gap-2">
           {['all', 'published', 'pending', 'failed'].map(status => (
@@ -167,18 +167,18 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
       </div>
 
       {/* Submissions Table */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <div className="table-container">
         {filteredSubmissions.length === 0 ? (
-          <div className="text-center py-16">
-            <i className="fa-solid fa-file-lines text-5xl text-slate-600 mb-4"></i>
-            <p className="text-slate-500 text-lg">No submissions yet</p>
-            <p className="text-slate-600 text-sm mt-1">Deploy the agent to start submitting articles and see results here</p>
+          <div className="empty-state py-16">
+            <i className="fa-solid fa-file-lines empty-state-icon"></i>
+            <p className="empty-state-title">No submissions yet</p>
+            <p className="empty-state-description">Deploy the agent to start submitting articles and see results here</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-700">
+                <tr className="table-header">
                   <th className="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Site</th>
                   <th className="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Article</th>
                   <th className="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Published URL</th>
@@ -187,10 +187,10 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
                   <th className="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody>
                 {filteredSubmissions.slice().reverse().map((sub) => (
                   <>
-                    <tr key={sub.id} className="hover:bg-slate-700/30 transition-colors">
+                    <tr key={sub.id} className="table-row">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 bg-slate-700 rounded flex items-center justify-center">
@@ -215,10 +215,10 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                          sub.status === 'published' ? 'bg-green-900/50 text-green-400 border border-green-700/30' :
-                          sub.status === 'failed' ? 'bg-red-900/50 text-red-400 border border-red-700/30' :
-                          'bg-yellow-900/50 text-yellow-400 border border-yellow-700/30'
+                        <span className={`badge ${
+                          sub.status === 'published' ? 'badge-success' :
+                          sub.status === 'failed' ? 'badge-error' :
+                          'badge-warning'
                         }`}>
                           {sub.status}
                         </span>
@@ -279,11 +279,11 @@ export default function Reports({ submissions, articles, sites }: ReportsProps) 
 
       {/* Published Links Summary */}
       {published.length > 0 && (
-        <div className="mt-6 bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <i className="fa-solid fa-link text-green-400"></i>
-            Published Article Links ({published.length})
-          </h3>
+        <div className="card p-6 mt-6">
+          <div className="section-header">
+            <i className="fa-solid fa-link section-icon"></i>
+            <h3 className="section-title">Published Article Links ({published.length})</h3>
+          </div>
           <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
             {published.map((sub) => (
               <div key={sub.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors">

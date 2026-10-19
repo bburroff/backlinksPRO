@@ -18,7 +18,6 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
     setEvaluation(null)
     setEvalStep(0)
 
-    // Simulate progressive evaluation
     const steps = [
       'Fetching website data...',
       'Analyzing HTML structure & meta tags...',
@@ -55,7 +54,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
       </div>
 
       {/* URL Input */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
+      <div className="card p-6 mb-6">
         <label className="block text-sm font-medium text-slate-300 mb-3">Your Website URL</label>
         <div className="flex gap-3">
           <input
@@ -63,13 +62,13 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://yourwebsite.com"
-            className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="input flex-1"
             onKeyDown={(e) => e.key === 'Enter' && evaluateSite()}
           />
           <button
             onClick={evaluateSite}
             disabled={evaluating || !url}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex items-center gap-2"
+            className="btn-primary flex items-center gap-2"
           >
             {evaluating ? (
               <>
@@ -88,7 +87,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
 
       {/* Evaluation Progress */}
       {evaluating && (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 mb-6">
+        <div className="card p-8 mb-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-indigo-600/20 rounded-full flex items-center justify-center">
               <i className="fa-solid fa-brain text-indigo-400 animate-pulse"></i>
@@ -124,8 +123,8 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
             ))}
           </div>
           <div className="mt-4">
-            <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-              <div className="h-full bg-indigo-500 rounded-full transition-all duration-500" style={{ width: `${(evalStep / 8) * 100}%` }}></div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${(evalStep / 8) * 100}%` }}></div>
             </div>
           </div>
         </div>
@@ -134,11 +133,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
       {evaluation && !evaluating && (
         <div className="space-y-6">
           {/* Site Overview */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-chart-simple text-indigo-400"></i>
-              Site Analysis
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-chart-simple section-icon"></i>
+              <h3 className="section-title">Site Analysis</h3>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-slate-700/30 rounded-lg">
                 <p className="text-xs text-slate-500 mb-1">Detected Niche</p>
@@ -164,11 +163,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
           </div>
 
           {/* Keywords */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-tags text-purple-400"></i>
-              Identified Keywords
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-tags section-icon"></i>
+              <h3 className="section-title">Identified Keywords</h3>
+            </div>
             <div className="flex flex-wrap gap-2">
               {evaluation.keywords.map((kw, i) => (
                 <span key={i} className="px-3 py-1.5 bg-purple-900/30 text-purple-300 rounded-full text-sm border border-purple-700/30">
@@ -179,11 +178,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
           </div>
 
           {/* Content Strategy */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-chess text-cyan-400"></i>
-              Content Strategy
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-chess section-icon"></i>
+              <h3 className="section-title">Content Strategy</h3>
+            </div>
             <div className="space-y-2">
               {evaluation.contentStrategy.map((strategy, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 bg-slate-700/30 rounded-lg">
@@ -195,11 +194,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
           </div>
 
           {/* Suggested Topics */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-lightbulb text-yellow-400"></i>
-              AI-Suggested Article Topics
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-lightbulb section-icon"></i>
+              <h3 className="section-title">AI-Suggested Article Topics</h3>
+            </div>
             <div className="space-y-2">
               {evaluation.suggestedTopics.map((topic, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors">
@@ -211,11 +210,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
           </div>
 
           {/* Backlink Opportunities */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-link text-green-400"></i>
-              Backlink Opportunities
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-link section-icon"></i>
+              <h3 className="section-title">Backlink Opportunities</h3>
+            </div>
             <div className="flex items-center gap-6 mb-4">
               <div className="text-center">
                 <p className="text-3xl font-bold text-green-400">{evaluation.backlinkOpportunities}</p>
@@ -236,11 +235,11 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
           </div>
 
           {/* Matching Sites */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <i className="fa-solid fa-bullseye text-green-400"></i>
-              Best Matching Sites from Your List ({matchingSites.length})
-            </h3>
+          <div className="card p-6">
+            <div className="section-header">
+              <i className="fa-solid fa-bullseye section-icon"></i>
+              <h3 className="section-title">Best Matching Sites from Your List ({matchingSites.length})</h3>
+            </div>
             {matchingSites.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {matchingSites.map((site) => (
@@ -252,7 +251,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
                       <p className="text-sm text-white font-medium">{site.name}</p>
                       <p className="text-xs text-slate-500">DA {site.da} • {site.category}</p>
                     </div>
-                    <span className="text-xs text-green-400 bg-green-900/30 px-2 py-1 rounded">Good Match</span>
+                    <span className="badge badge-success">Good Match</span>
                   </div>
                 ))}
               </div>

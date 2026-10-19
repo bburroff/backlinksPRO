@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { SiteData, ArticleData, SubmissionRecord } from '../types'
 
 interface DashboardProps {
@@ -49,7 +48,7 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-slate-600 transition-all">
+          <div key={i} className="stat-card">
             <div className="flex items-center justify-between mb-3">
               <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                 <i className={`fa-solid ${stat.icon} text-white text-sm`}></i>
@@ -63,16 +62,16 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <i className="fa-solid fa-clock-rotate-left text-indigo-400"></i>
-            Recent Submissions
-          </h3>
+        <div className="card p-6">
+          <div className="section-header">
+            <i className="fa-solid fa-clock-rotate-left section-icon"></i>
+            <h3 className="section-title">Recent Submissions</h3>
+          </div>
           {submissions.length === 0 ? (
-            <div className="text-center py-8">
-              <i className="fa-solid fa-inbox text-4xl text-slate-600 mb-3"></i>
-              <p className="text-slate-500">No submissions yet</p>
-              <p className="text-slate-600 text-sm">Deploy the agent to start submitting articles</p>
+            <div className="empty-state">
+              <i className="fa-solid fa-inbox empty-state-icon"></i>
+              <p className="empty-state-title">No submissions yet</p>
+              <p className="empty-state-description">Deploy the agent to start submitting articles</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin">
@@ -87,10 +86,10 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
                     <p className="text-sm text-slate-200 truncate">{sub.articleTitle}</p>
                     <p className="text-xs text-slate-500">{sub.siteName} • {new Date(sub.submittedAt).toLocaleTimeString()}</p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    sub.status === 'published' ? 'bg-green-900/50 text-green-400' :
-                    sub.status === 'failed' ? 'bg-red-900/50 text-red-400' :
-                    'bg-yellow-900/50 text-yellow-400'
+                  <span className={`badge ${
+                    sub.status === 'published' ? 'badge-success' :
+                    sub.status === 'failed' ? 'badge-error' :
+                    'badge-warning'
                   }`}>{sub.status}</span>
                 </div>
               ))}
@@ -99,19 +98,19 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
         </div>
 
         {/* Submission Status */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <i className="fa-solid fa-chart-pie text-purple-400"></i>
-            Submission Status
-          </h3>
+        <div className="card p-6">
+          <div className="section-header">
+            <i className="fa-solid fa-chart-pie section-icon"></i>
+            <h3 className="section-title">Submission Status</h3>
+          </div>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-slate-400">Published</span>
                 <span className="text-green-400">{publishedCount}</span>
               </div>
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${totalSubmissions ? (publishedCount / totalSubmissions) * 100 : 0}%` }}></div>
+              <div className="progress-bar">
+                <div className="progress-fill bg-green-500" style={{ width: `${totalSubmissions ? (publishedCount / totalSubmissions) * 100 : 0}%` }}></div>
               </div>
             </div>
             <div>
@@ -119,8 +118,8 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
                 <span className="text-slate-400">Pending</span>
                 <span className="text-yellow-400">{pendingCount}</span>
               </div>
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-yellow-500 rounded-full transition-all" style={{ width: `${totalSubmissions ? (pendingCount / totalSubmissions) * 100 : 0}%` }}></div>
+              <div className="progress-bar">
+                <div className="progress-fill bg-yellow-500" style={{ width: `${totalSubmissions ? (pendingCount / totalSubmissions) * 100 : 0}%` }}></div>
               </div>
             </div>
             <div>
@@ -128,8 +127,8 @@ export default function Dashboard({ sites, articles, submissions, agentRunning }
                 <span className="text-slate-400">Failed</span>
                 <span className="text-red-400">{failedCount}</span>
               </div>
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-red-500 rounded-full transition-all" style={{ width: `${totalSubmissions ? (failedCount / totalSubmissions) * 100 : 0}%` }}></div>
+              <div className="progress-bar">
+                <div className="progress-fill bg-red-500" style={{ width: `${totalSubmissions ? (failedCount / totalSubmissions) * 100 : 0}%` }}></div>
               </div>
             </div>
           </div>
