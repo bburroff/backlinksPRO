@@ -8,7 +8,7 @@ interface ArticleGeneratorProps {
   sites: SiteData[]
 }
 
-export default function ArticleGenerator({ articles, setArticles, sites }: ArticleGeneratorProps) {
+export default function ArticleGenerator({ articles, setArticles }: ArticleGeneratorProps) {
   const [targetUrl, setTargetUrl] = useState('')
   const [anchorText, setAnchorText] = useState('')
   const [topic, setTopic] = useState('')
@@ -75,123 +75,71 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
     setGenerationProgress(0)
   }
 
-  const generateBatch = async () => {
-    if (!targetUrl || !topic) return
-    const topics = topic.split(',').map(t => t.trim()).filter(Boolean)
-    if (topics.length <= 1) {
-      generateArticleHandler()
-      return
-    }
-
-    setGenerating(true)
-    const newArticles: ArticleData[] = []
-    
-    for (let i = 0; i < topics.length; i++) {
-      setGenerationProgress(((i + 1) / topics.length) * 100)
-      const result = generateArticle(topics[i], targetUrl, anchorText || targetUrl, category)
-      newArticles.push({
-        id: Date.now().toString() + i,
-        title: result.title,
-        content: result.content,
-        targetUrl,
-        anchorText: anchorText || targetUrl,
-        category,
-        wordCount: result.content.split(/\s+/).length,
-        createdAt: new Date().toISOString(),
-        status: 'ready',
-        keywords: result.keywords,
-      })
-      await new Promise(resolve => setTimeout(resolve, 500))
-    }
-    
-    setArticles([...articles, ...newArticles])
-    setGenerating(false)
-    setGenerationProgress(0)
-  }
-
   return (
-    <div className="animate-slide-in">
+    <div className="animate-slide-in max-w-7xl mx-auto">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">AI Article Writer</h1>
-        <p className="text-slate-400">Generate custom articles with backlinks to your website</p>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>AI Writer</span>
+          <div className="h-px w-12" style={{ background: 'var(--accent)' }}></div>
+        </div>
+        <h1 className="display">Article Generator<span className="display-serif gradient-text">.</span></h1>
+        <p className="mt-2 text-base" style={{ color: 'var(--text-muted)' }}>
+          Create custom articles with backlinks to your website
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Configuration Panel */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="card p-6">
-            <div className="section-header">
-              <i className="fa-solid fa-sliders section-icon"></i>
-              <h3 className="section-title">Configuration</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Configuration - 2 cols */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="card-static p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)' }}>
+                <i className="fa-solid fa-sliders text-white text-sm"></i>
+              </div>
+              <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Configuration</h3>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-1">Target Website URL *</label>
-                <input
-                  type="text"
-                  value={targetUrl}
-                  onChange={(e) => setTargetUrl(e.target.value)}
-                  placeholder="https://yourwebsite.com"
-                  className="input"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>TARGET WEBSITE URL *</label>
+                <input type="text" value={targetUrl} onChange={(e) => setTargetUrl(e.target.value)} placeholder="https://yourwebsite.com" className="input" />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-1">Anchor Text</label>
-                <input
-                  type="text"
-                  value={anchorText}
-                  onChange={(e) => setAnchorText(e.target.value)}
-                  placeholder="Click here to learn more"
-                  className="input"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>ANCHOR TEXT</label>
+                <input type="text" value={anchorText} onChange={(e) => setAnchorText(e.target.value)} placeholder="Click here to learn more" className="input" />
               </div>
 
               <div>
-                <label className="block text-sm text-slate-400 mb-1">Article Topic(s) * <span className="text-slate-600">(comma-separate for batch)</span></label>
-                <input
-                  type="text"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="e.g., Digital Marketing, SEO Tips, Content Strategy"
-                  className="input"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>ARTICLE TOPIC(S) *</label>
+                <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., Digital Marketing, SEO Tips" className="input" />
+                <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>Comma-separate for batch generation</p>
               </div>
 
-              <div>
-                <label className="block text-sm text-slate-400 mb-1">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="input"
-                >
-                  <option>General</option>
-                  <option>Technology</option>
-                  <option>Business</option>
-                  <option>Health</option>
-                  <option>Lifestyle</option>
-                  <option>Education</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-400 mb-1">Target Word Count: ~{wordCount}</label>
-                <input
-                  type="range"
-                  min="300"
-                  max="2000"
-                  step="100"
-                  value={wordCount}
-                  onChange={(e) => setWordCount(parseInt(e.target.value))}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>CATEGORY</label>
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="input">
+                    <option>General</option>
+                    <option>Technology</option>
+                    <option>Business</option>
+                    <option>Health</option>
+                    <option>Lifestyle</option>
+                    <option>Education</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>~{wordCount} WORDS</label>
+                  <input type="range" min="300" max="2000" step="100" value={wordCount} onChange={(e) => setWordCount(parseInt(e.target.value))} className="mt-3" />
+                </div>
               </div>
 
               {generating && (
-                <div className="mb-2">
-                  <div className="flex justify-between text-xs text-slate-400 mb-1">
-                    <span>Generating...</span>
-                    <span>{generationProgress}%</span>
+                <div>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Generating...</span>
+                    <span className="font-bold" style={{ color: 'var(--accent)' }}>{generationProgress}%</span>
                   </div>
                   <div className="progress-bar">
                     <div className="progress-fill" style={{ width: `${generationProgress}%` }}></div>
@@ -199,95 +147,83 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
                 </div>
               )}
 
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={generateArticleHandler}
-                  disabled={generating || !targetUrl || !topic}
-                  className="btn-primary w-full flex items-center justify-center gap-2"
-                >
-                  {generating ? (
-                    <>
-                      <i className="fa-solid fa-robot animate-pulse"></i>
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-wand-magic-sparkles"></i>
-                      Generate Article
-                    </>
-                  )}
-                </button>
-                {topic.includes(',') && (
-                  <button
-                    onClick={generateBatch}
-                    disabled={generating || !targetUrl}
-                    className="btn-primary w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
-                  >
-                    <i className="fa-solid fa-layer-group"></i>
-                    Batch Generate ({topic.split(',').filter(t => t.trim()).length} articles)
-                  </button>
+              <button
+                onClick={generateArticleHandler}
+                disabled={generating || !targetUrl || !topic}
+                className="btn-gradient w-full justify-center"
+              >
+                {generating ? (
+                  <>
+                    <i className="fa-solid fa-robot animate-pulse"></i>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-wand-magic-sparkles"></i>
+                    Generate Article
+                  </>
                 )}
-              </div>
+              </button>
             </div>
           </div>
 
           {/* Backlink Preview */}
           {targetUrl && (
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">Backlink Preview</h3>
-              <div className="p-3 bg-slate-900 rounded-lg">
-                <p className="text-xs text-slate-500 mb-1">Link will appear as:</p>
-                <a href="#" className="text-indigo-400 text-sm hover:underline">{anchorText || 'Your anchor text'}</a>
-                <p className="text-xs text-slate-600 mt-1 truncate">→ {targetUrl}</p>
+            <div className="card-static p-5">
+              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-muted)' }}>BACKLINK PREVIEW</p>
+              <div className="p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
+                <a href="#" className="font-medium text-sm">{anchorText || 'Your anchor text'}</a>
+                <p className="text-xs mt-1 truncate" style={{ color: 'var(--text-faint)' }}>→ {targetUrl}</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Generated Content */}
-        <div className="lg:col-span-2">
-          <div className="card p-6 h-full">
-            <div className="flex items-center justify-between mb-4">
-              <div className="section-header mb-0">
-                <i className="fa-solid fa-file-lines section-icon"></i>
-                <h3 className="section-title">Generated Article</h3>
+        {/* Generated Content - 3 cols */}
+        <div className="lg:col-span-3">
+          <div className="card-static p-6 h-full">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #06b6d4, #7c3aed)' }}>
+                  <i className="fa-solid fa-file-lines text-white text-sm"></i>
+                </div>
+                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Generated Article</h3>
               </div>
               {generatedContent && !generating && (
-                <button
-                  onClick={saveArticle}
-                  className="btn-primary flex items-center gap-2 bg-green-600 hover:bg-green-500"
-                >
+                <button onClick={saveArticle} className="btn-primary">
                   <i className="fa-solid fa-save"></i>
-                  Save to Library
+                  Save
                 </button>
               )}
             </div>
 
             {!generatedContent && !generating && (
               <div className="empty-state py-16">
-                <i className="fa-solid fa-wand-magic-sparkles empty-state-icon"></i>
-                <p className="empty-state-title">No article generated yet</p>
-                <p className="empty-state-description">Configure settings and click Generate to create an AI-written article</p>
+                <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'var(--bg-soft)' }}>
+                  <i className="fa-solid fa-wand-magic-sparkles text-3xl" style={{ color: 'var(--text-faint)' }}></i>
+                </div>
+                <p className="font-semibold" style={{ color: 'var(--text-muted)' }}>No article generated yet</p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>Configure settings and click Generate</p>
               </div>
             )}
 
             {(generatedContent || generating) && (
-              <div className="prose prose-invert max-w-none">
-                <div className="console max-h-[600px] overflow-y-auto scrollbar-thin">
-                  <pre className="whitespace-pre-wrap text-sm text-slate-200 font-sans leading-relaxed">
+              <div>
+                <div className="console max-h-[600px] overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: '#e2e8f0' }}>
                     {generatedContent || 'Initializing AI model...'}
-                    {generating && <span className="animate-pulse text-indigo-400">▊</span>}
+                    {generating && <span className="animate-pulse text-purple-400">▊</span>}
                   </pre>
                 </div>
                 {generatedContent && !generating && (
-                  <div className="flex items-center gap-4 mt-4 text-xs text-slate-500 flex-wrap">
-                    <span><i className="fa-solid fa-font mr-1"></i> {generatedContent.split(/\s+/).length} words</span>
-                    <span><i className="fa-solid fa-link mr-1"></i> 2 backlinks</span>
-                    <span><i className="fa-solid fa-clock mr-1"></i> {new Date().toLocaleDateString()}</span>
+                  <div className="flex items-center gap-4 mt-4 text-xs flex-wrap" style={{ color: 'var(--text-faint)' }}>
+                    <span className="flex items-center gap-1"><i className="fa-solid fa-font"></i> {generatedContent.split(/\s+/).length} words</span>
+                    <span className="flex items-center gap-1"><i className="fa-solid fa-link"></i> 2 backlinks</span>
+                    <span className="flex items-center gap-1"><i className="fa-solid fa-clock"></i> {new Date().toLocaleDateString()}</span>
                     {generatedKeywords.length > 0 && (
                       <div className="flex gap-1 flex-wrap">
                         {generatedKeywords.slice(0, 3).map((kw, i) => (
-                          <span key={i} className="px-2 py-0.5 bg-purple-900/30 text-purple-400 rounded text-xs">{kw}</span>
+                          <span key={i} className="badge badge-purple">{kw}</span>
                         ))}
                       </div>
                     )}
@@ -299,18 +235,21 @@ export default function ArticleGenerator({ articles, setArticles, sites }: Artic
 
           {/* Saved Articles */}
           {articles.length > 0 && (
-            <div className="card p-6 mt-6">
-              <div className="section-header">
-                <i className="fa-solid fa-folder-open section-icon"></i>
-                <h3 className="section-title">Saved Articles ({articles.length})</h3>
+            <div className="card-static p-6 mt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}>
+                  <i className="fa-solid fa-folder-open text-white text-sm"></i>
+                </div>
+                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Saved Articles</h3>
+                <span className="badge badge-neutral">{articles.length}</span>
               </div>
-              <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                 {articles.map((article) => (
-                  <div key={article.id} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
-                    <i className="fa-solid fa-file-lines text-slate-500"></i>
+                  <div key={article.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
+                    <i className="fa-solid fa-file-lines" style={{ color: 'var(--text-faint)' }}></i>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-200 truncate">{article.title}</p>
-                      <p className="text-xs text-slate-500">{article.wordCount} words • {article.category} • → {article.targetUrl}</p>
+                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{article.title}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{article.wordCount} words • {article.category}</p>
                     </div>
                     <span className="badge badge-success">{article.status}</span>
                   </div>

@@ -67,10 +67,10 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-900">
+    <div className="flex h-screen overflow-hidden app-bg">
       <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} agentRunning={agentRunning} />
-      <main className="flex-1 overflow-y-auto scrollbar-thin">
-        <div className="p-6 lg:p-8">
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-8 lg:p-12">
           {renderPage()}
         </div>
       </main>

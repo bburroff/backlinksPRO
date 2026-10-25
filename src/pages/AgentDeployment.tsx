@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { SiteData, ArticleData, SubmissionRecord, AgentLog, AgentStep } from '../types'
-import { generateAgentLogs, generateAgentSteps } from '../utils/ai'
+import { SiteData, ArticleData, SubmissionRecord, AgentLog } from '../types'
+import { generateAgentSteps } from '../utils/ai'
 
 interface AgentDeploymentProps {
   sites: SiteData[]
@@ -24,7 +24,6 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
   const [totalCount, setTotalCount] = useState(0)
   const [browserView, setBrowserView] = useState('')
   const stopRef = useRef(false)
-  const runningRef = useRef(false)
 
   const addLog = useCallback((log: AgentLog) => {
     setLogs(prev => [...prev, log])
@@ -40,11 +39,7 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
 
   const selectAllSites = () => {
     const activeSites = sites.filter(s => s.status === 'active')
-    if (selectedSites.length === activeSites.length) {
-      setSelectedSites([])
-    } else {
-      setSelectedSites(activeSites.map(s => s.id))
-    }
+    setSelectedSites(selectedSites.length === activeSites.length ? [] : activeSites.map(s => s.id))
   }
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
@@ -53,10 +48,8 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
     if (selectedSites.length === 0 || selectedArticles.length === 0) return
     
     const agentUsername = username || `linkforge_${Date.now().toString(36).slice(-8)}`
-    const agentPassword = password || `Pf${Math.random().toString(36).substr(2, 8)}!${Math.floor(Math.random() * 99)}`
     
     setAgentRunning(true)
-    runningRef.current = true
     stopRef.current = false
     setLogs([])
     setProgress(0)
@@ -73,7 +66,6 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
     await addLog({ timestamp: new Date().toISOString(), message: '═══════════════════════════════════════', type: 'info' })
     await addLog({ timestamp: new Date().toISOString(), message: `📋 Target: ${totalTasks} sites, ${targetArticles.length} articles`, type: 'info' })
     await addLog({ timestamp: new Date().toISOString(), message: `👤 Username: ${agentUsername}`, type: 'info' })
-    await addLog({ timestamp: new Date().toISOString(), message: `⏱️ Delay: ${delay}s between sites`, type: 'info' })
     await addLog({ timestamp: new Date().toISOString(), message: '', type: 'info' })
 
     const newSubmissions = [...submissions]
@@ -88,10 +80,10 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
       const article = targetArticles[i % targetArticles.length]
       
       setCurrentSite(site.name)
-      setProgress(((i) / totalTasks) * 100)
+      setProgress((i / totalTasks) * 100)
       setBrowserView(`Navigating to ${site.url}...`)
 
-      await addLog({ timestamp: new Date().toISOString(), message: `\n━━━ [${i + 1}/${totalTasks}] Processing: ${site.name} ━━━`, type: 'info' })
+      await addLog({ timestamp: new Date().toISOString(), message: `\n━━━ [${i + 1}/${totalTasks}] ${site.name} ━━━`, type: 'info' })
       
       await addLog({ timestamp: new Date().toISOString(), message: `[Browser] Launching headless Chromium...`, type: 'browser' })
       setBrowserView(`Launching browser for ${site.name}`)
@@ -106,27 +98,23 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
       await addLog({ timestamp: new Date().toISOString(), message: `[Detect] Scanning DOM for registration form...`, type: 'action' })
       setBrowserView(`Scanning page for signup form...`)
       await sleep(500)
-      await addLog({ timestamp: new Date().toISOString(), message: `[Detect] Found: form.signup-form with ${Math.floor(Math.random() * 3) + 4} input fields`, type: 'action' })
-      await sleep(200)
+      await addLog({ timestamp: new Date().toISOString(), message: `[Detect] Found: form.signup-form`, type: 'action' })
 
       await addLog({ timestamp: new Date().toISOString(), message: `[Form] → username: ${agentUsername}`, type: 'action' })
       setBrowserView(`Filling: username = ${agentUsername}`)
       await sleep(300)
       await addLog({ timestamp: new Date().toISOString(), message: `[Form] → email: ${agentUsername}@protonmail.com`, type: 'action' })
-      setBrowserView(`Filling: email = ${agentUsername}@protonmail.com`)
       await sleep(300)
-      await addLog({ timestamp: new Date().toISOString(), message: `[Form] → password: •••••••••••• (generated)`, type: 'action' })
-      setBrowserView(`Filling: password = ••••••••••••`)
+      await addLog({ timestamp: new Date().toISOString(), message: `[Form] → password: ••••••••••••`, type: 'action' })
       await sleep(300)
 
-      const captchaType = ['hCaptcha', 'reCAPTCHA v2', 'Cloudflare Turnstile', 'Simple math'][Math.floor(Math.random() * 4)]
+      const captchaType = ['hCaptcha', 'reCAPTCHA v2', 'Cloudflare Turnstile'][Math.floor(Math.random() * 3)]
       await addLog({ timestamp: new Date().toISOString(), message: `[Captcha] Detected: ${captchaType}`, type: 'warning' })
       setBrowserView(`Solving ${captchaType}...`)
       await sleep(800)
-      await addLog({ timestamp: new Date().toISOString(), message: `[Captcha] Solved via anti-detection module (${(Math.random() * 2 + 1).toFixed(1)}s)`, type: 'success' })
-      await sleep(200)
+      await addLog({ timestamp: new Date().toISOString(), message: `[Captcha] Solved (${(Math.random() * 2 + 1).toFixed(1)}s)`, type: 'success' })
 
-      await addLog({ timestamp: new Date().toISOString(), message: `[Form] Clicking submit...`, type: 'action' })
+      await addLog({ timestamp: new Date().toISOString(), message: `[Form] Submitting...`, type: 'action' })
       setBrowserView(`Submitting registration form...`)
       await sleep(600)
 
@@ -137,40 +125,33 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
         await addLog({ timestamp: new Date().toISOString(), message: `[Auth] ✅ Registration successful!`, type: 'success' })
         setBrowserView(`Account created! Logging in...`)
         await sleep(400)
-        await addLog({ timestamp: new Date().toISOString(), message: `[Auth] Logging in with new credentials...`, type: 'action' })
-        await sleep(500)
-        await addLog({ timestamp: new Date().toISOString(), message: `[Auth] ✅ Login successful — session active`, type: 'success' })
+        await addLog({ timestamp: new Date().toISOString(), message: `[Auth] ✅ Login successful`, type: 'success' })
         await sleep(300)
         
-        await addLog({ timestamp: new Date().toISOString(), message: `[Browser] Navigating to article editor...`, type: 'browser' })
+        await addLog({ timestamp: new Date().toISOString(), message: `[Browser] Navigating to editor...`, type: 'browser' })
         setBrowserView(`Opening article editor on ${site.name}`)
         await sleep(500)
         
-        await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Setting title: "${article.title.substring(0, 50)}..."`, type: 'action' })
+        await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Setting title...`, type: 'action' })
         setBrowserView(`Setting article title...`)
         await sleep(400)
         await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Inserting article body (${article.wordCount} words)`, type: 'action' })
         setBrowserView(`Inserting article content...`)
         await sleep(600)
-        await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Inserting backlink: "${article.anchorText}" → ${article.targetUrl}`, type: 'action' })
-        setBrowserView(`Adding backlink to article...`)
+        await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Inserting backlink: "${article.anchorText}"`, type: 'action' })
+        setBrowserView(`Adding backlink...`)
         await sleep(400)
-        await addLog({ timestamp: new Date().toISOString(), message: `[Editor] Adding tags and category`, type: 'action' })
-        await sleep(300)
         
-        await addLog({ timestamp: new Date().toISOString(), message: `[Publish] Previewing article...`, type: 'info' })
-        setBrowserView(`Previewing article before publish...`)
-        await sleep(500)
-        await addLog({ timestamp: new Date().toISOString(), message: `[Publish] Clicking PUBLISH button...`, type: 'action' })
+        await addLog({ timestamp: new Date().toISOString(), message: `[Publish] Clicking PUBLISH...`, type: 'action' })
         setBrowserView(`Publishing article...`)
         await sleep(800)
 
         const publishedUrl = `${site.url}/article/${Math.random().toString(36).substr(2, 8)}`
-        await addLog({ timestamp: new Date().toISOString(), message: `[Publish] ✅ Article published successfully!`, type: 'success' })
+        await addLog({ timestamp: new Date().toISOString(), message: `[Publish] ✅ Published!`, type: 'success' })
         await addLog({ timestamp: new Date().toISOString(), message: `[Link] 🔗 ${publishedUrl}`, type: 'success' })
-        setBrowserView(`✅ Published! ${publishedUrl}`)
+        setBrowserView(`✅ Published!`)
 
-        const submission: SubmissionRecord = {
+        newSubmissions.push({
           id: Date.now().toString() + i,
           siteId: site.id,
           siteName: site.name,
@@ -182,13 +163,12 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
           backlinkUrl: article.targetUrl,
           username: agentUsername,
           steps,
-        }
-        newSubmissions.push(submission)
+        })
       } else {
-        await addLog({ timestamp: new Date().toISOString(), message: `[Auth] ❌ Registration failed — site rejected submission`, type: 'error' })
-        setBrowserView(`❌ Failed: Site rejected submission`)
+        await addLog({ timestamp: new Date().toISOString(), message: `[Auth] ❌ Registration failed`, type: 'error' })
+        setBrowserView(`❌ Failed`)
 
-        const submission: SubmissionRecord = {
+        newSubmissions.push({
           id: Date.now().toString() + i,
           siteId: site.id,
           siteName: site.name,
@@ -200,8 +180,7 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
           backlinkUrl: article.targetUrl,
           username: agentUsername,
           steps,
-        }
-        newSubmissions.push(submission)
+        })
       }
 
       setSubmissions([...newSubmissions])
@@ -209,8 +188,8 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
       setProgress(((i + 1) / totalTasks) * 100)
 
       if (i < targetSites.length - 1 && !stopRef.current) {
-        await addLog({ timestamp: new Date().toISOString(), message: `[Wait] Cooling down ${delay}s before next site...`, type: 'info' })
-        setBrowserView(`Waiting ${delay}s before next submission...`)
+        await addLog({ timestamp: new Date().toISOString(), message: `[Wait] Cooling down ${delay}s...`, type: 'info' })
+        setBrowserView(`Waiting ${delay}s...`)
         await sleep(delay * 1000)
       }
     }
@@ -218,186 +197,159 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
     if (!stopRef.current) {
       await addLog({ timestamp: new Date().toISOString(), message: '', type: 'info' })
       await addLog({ timestamp: new Date().toISOString(), message: '═══════════════════════════════════════', type: 'info' })
-      await addLog({ timestamp: new Date().toISOString(), message: `✅ AGENT COMPLETE — ${newSubmissions.filter(s => s.status === 'published').length}/${totalTasks} published`, type: 'success' })
-      await addLog({ timestamp: new Date().toISOString(), message: '═══════════════════════════════════════', type: 'info' })
+      await addLog({ timestamp: new Date().toISOString(), message: `✅ COMPLETE — ${newSubmissions.filter(s => s.status === 'published').length}/${totalTasks} published`, type: 'success' })
     }
 
     setAgentRunning(false)
-    runningRef.current = false
     setCurrentSite('')
     setBrowserView('')
   }
 
-  const stopAgent = () => {
-    stopRef.current = true
-  }
+  const stopAgent = () => { stopRef.current = true }
 
-  useEffect(() => {
-    return () => {
-      stopRef.current = true
-    }
-  }, [])
+  useEffect(() => { return () => { stopRef.current = true } }, [])
 
   return (
-    <div className="animate-slide-in">
+    <div className="animate-slide-in max-w-7xl mx-auto">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Deploy Agent</h1>
-        <p className="text-slate-400">Configure and launch the automated submission agent</p>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Automation</span>
+          <div className="h-px w-12" style={{ background: 'var(--accent)' }}></div>
+        </div>
+        <h1 className="display">Deploy Agent<span className="display-serif gradient-text">.</span></h1>
+        <p className="mt-2 text-base" style={{ color: 'var(--text-muted)' }}>
+          Configure and launch automated article submissions
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Configuration */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Credentials */}
-          <div className="card p-6">
-            <div className="section-header">
-              <i className="fa-solid fa-key section-icon"></i>
-              <h3 className="section-title">Agent Credentials</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Configuration - 2 cols */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="card-static p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)' }}>
+                <i className="fa-solid fa-key text-white text-sm"></i>
+              </div>
+              <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Credentials</h3>
             </div>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Username <span className="text-slate-600">(auto-generated if empty)</span></label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Auto-generated username"
-                  disabled={agentRunning}
-                  className="input disabled:opacity-50"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>USERNAME</label>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Auto-generated" disabled={agentRunning} className="input disabled:opacity-50" />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Password <span className="text-slate-600">(auto-generated if empty)</span></label>
-                <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Auto-generated password"
-                  disabled={agentRunning}
-                  className="input font-mono disabled:opacity-50"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>PASSWORD</label>
+                <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Auto-generated" disabled={agentRunning} className="input font-mono disabled:opacity-50" />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Delay between submissions: {delay}s</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  value={delay}
-                  onChange={(e) => setDelay(parseInt(e.target.value))}
-                  disabled={agentRunning}
-                  className="disabled:opacity-50"
-                />
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>DELAY: {delay}s</label>
+                <input type="range" min="1" max="15" value={delay} onChange={(e) => setDelay(parseInt(e.target.value))} disabled={agentRunning} />
               </div>
             </div>
           </div>
 
-          {/* Select Sites */}
-          <div className="card p-6">
+          {/* Sites */}
+          <div className="card-static p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="section-header mb-0">
-                <i className="fa-solid fa-globe section-icon"></i>
-                <h3 className="section-title">Target Sites</h3>
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #06b6d4, #3b82f6)' }}>
+                  <i className="fa-solid fa-globe text-white text-sm"></i>
+                </div>
+                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Sites</h3>
               </div>
-              <button onClick={selectAllSites} disabled={agentRunning} className="text-xs text-indigo-400 hover:text-indigo-300 disabled:opacity-50">
-                {selectedSites.length === sites.filter(s => s.status === 'active').length ? 'Deselect All' : 'Select All'}
+              <button onClick={selectAllSites} disabled={agentRunning} className="btn-ghost text-xs">
+                {selectedSites.length === sites.filter(s => s.status === 'active').length ? 'Deselect' : 'Select All'}
               </button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
+            <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
               {sites.filter(s => s.status === 'active').map(site => (
-                <label key={site.id} className="flex items-center gap-3 p-2 hover:bg-slate-700/30 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedSites.includes(site.id)}
-                    onChange={() => toggleSite(site.id)}
-                    disabled={agentRunning}
-                  />
-                  <span className="text-sm text-slate-300 flex-1">{site.name}</span>
-                  <span className="text-xs text-slate-500">DA {site.da}</span>
+                <label key={site.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-black/[0.02] cursor-pointer transition-colors">
+                  <input type="checkbox" checked={selectedSites.includes(site.id)} onChange={() => toggleSite(site.id)} disabled={agentRunning} />
+                  <span className="text-sm flex-1" style={{ color: 'var(--text)' }}>{site.name}</span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--text-faint)' }}>DA {site.da}</span>
                 </label>
               ))}
             </div>
-            <p className="text-xs text-slate-500 mt-2">{selectedSites.length} sites selected</p>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-faint)' }}>{selectedSites.length} selected</p>
           </div>
 
-          {/* Select Articles */}
-          <div className="card p-6">
-            <div className="section-header">
-              <i className="fa-solid fa-file-lines section-icon"></i>
-              <h3 className="section-title">Articles to Submit</h3>
+          {/* Articles */}
+          <div className="card-static p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)' }}>
+                <i className="fa-solid fa-feather text-white text-sm"></i>
+              </div>
+              <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Articles</h3>
             </div>
             {articles.length === 0 ? (
-              <p className="text-sm text-slate-500 text-center py-4">No articles available. Generate some first!</p>
+              <p className="text-sm text-center py-4" style={{ color: 'var(--text-faint)' }}>No articles available</p>
             ) : (
-              <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
+              <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
                 {articles.map(article => (
-                  <label key={article.id} className="flex items-center gap-3 p-2 hover:bg-slate-700/30 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedArticles.includes(article.id)}
-                      onChange={() => toggleArticle(article.id)}
-                      disabled={agentRunning}
-                    />
-                    <span className="text-sm text-slate-300 flex-1 truncate">{article.title}</span>
+                  <label key={article.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-black/[0.02] cursor-pointer transition-colors">
+                    <input type="checkbox" checked={selectedArticles.includes(article.id)} onChange={() => toggleArticle(article.id)} disabled={agentRunning} />
+                    <span className="text-sm flex-1 truncate" style={{ color: 'var(--text)' }}>{article.title}</span>
                   </label>
                 ))}
               </div>
             )}
-            <p className="text-xs text-slate-500 mt-2">{selectedArticles.length} articles selected</p>
           </div>
 
-          {/* Deploy Button */}
+          {/* Deploy */}
           <button
             onClick={agentRunning ? stopAgent : deployAgent}
             disabled={!agentRunning && (selectedSites.length === 0 || selectedArticles.length === 0)}
-            className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3 ${
+            className={`w-full py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-3 disabled:opacity-50 ${
               agentRunning
-                ? 'bg-red-600 hover:bg-red-500 text-white'
-                : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'text-white'
             }`}
+            style={!agentRunning ? { background: 'linear-gradient(135deg, #22c55e, #10b981)', boxShadow: '0 8px 24px -4px rgba(34, 197, 94, 0.4)' } : {}}
           >
             {agentRunning ? (
-              <>
-                <i className="fa-solid fa-stop"></i>
-                Stop Agent
-              </>
+              <><i className="fa-solid fa-stop"></i>Stop Agent</>
             ) : (
-              <>
-                <i className="fa-solid fa-rocket"></i>
-                Deploy Agent
-              </>
+              <><i className="fa-solid fa-rocket"></i>Deploy Agent</>
             )}
           </button>
         </div>
 
-        {/* Live Console + Browser View */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Browser Simulation View */}
-          <div className="card overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-900 border-b border-slate-700">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              </div>
-              <div className="flex-1 mx-4">
-                <div className="bg-slate-800 rounded px-3 py-1 text-xs text-slate-400 flex items-center gap-2">
-                  <i className="fa-solid fa-lock text-green-400 text-[10px]"></i>
-                  {currentSite || 'agent.linkforge.io'}
+        {/* Console - 3 cols */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* Browser Window */}
+          <div className="browser-window">
+            <div className="browser-bar">
+              <div className="browser-dot" style={{ background: '#ff5f57' }}></div>
+              <div className="browser-dot" style={{ background: '#febc2e' }}></div>
+              <div className="browser-dot" style={{ background: '#28c840' }}></div>
+              <div className="flex-1 mx-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs" style={{ background: 'var(--bg-soft)', color: 'var(--text-muted)' }}>
+                  <i className="fa-solid fa-lock text-green-600 text-[10px]"></i>
+                  <span className="truncate">{currentSite || 'agent.linkforge.io'}</span>
                 </div>
               </div>
-              {agentRunning && <span className="text-xs text-green-400 animate-pulse">● LIVE</span>}
+              {agentRunning && (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot"></div>
+                  <span className="text-xs font-semibold text-green-600">LIVE</span>
+                </div>
+              )}
             </div>
-            <div className="p-6 min-h-[100px] flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800">
+            <div className="p-8 min-h-[120px] flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #faf7f2, #f5f0e8)' }}>
               {browserView ? (
                 <div className="text-center">
-                  <i className={`fa-solid ${agentRunning ? 'fa-spinner animate-spin text-indigo-400' : 'fa-check-circle text-green-400'} text-2xl mb-2`}></i>
-                  <p className="text-sm text-slate-300">{browserView}</p>
+                  <div className={`w-14 h-14 rounded-3xl mx-auto mb-3 flex items-center justify-center ${agentRunning ? 'shimmer' : ''}`} style={{ background: agentRunning ? 'linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1))' : 'rgba(34, 197, 94, 0.1)' }}>
+                    <i className={`fa-solid text-xl ${agentRunning ? 'fa-spinner animate-spin' : 'fa-check'}`} style={{ color: agentRunning ? 'var(--accent)' : '#22c55e' }}></i>
+                  </div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{browserView}</p>
                 </div>
               ) : (
-                <div className="text-center text-slate-600">
-                  <i className="fa-solid fa-display text-3xl mb-2"></i>
-                  <p className="text-sm">Browser view will appear here when agent runs</p>
+                <div className="text-center">
+                  <div className="w-14 h-14 rounded-3xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'var(--bg-soft)' }}>
+                    <i className="fa-solid fa-display text-xl" style={{ color: 'var(--text-faint)' }}></i>
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--text-faint)' }}>Browser view appears when agent runs</p>
                 </div>
               )}
             </div>
@@ -405,10 +357,10 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
 
           {/* Progress */}
           {agentRunning && (
-            <div className="card p-4">
+            <div className="card-static p-5">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-slate-400">Progress: {completedCount}/{totalCount} sites</span>
-                <span className="text-indigo-400 font-mono">{Math.round(progress)}%</span>
+                <span className="font-medium" style={{ color: 'var(--text)' }}>Progress</span>
+                <span className="font-bold" style={{ color: 'var(--accent)' }}>{completedCount}/{totalCount} sites • {Math.round(progress)}%</span>
               </div>
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${progress}%` }}></div>
@@ -416,38 +368,31 @@ export default function AgentDeployment({ sites, articles, submissions, setSubmi
             </div>
           )}
 
-          {/* Console Output */}
-          <div className={`card overflow-hidden ${agentRunning ? 'border-green-700/50 agent-active' : ''}`}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
-              <div className="section-header mb-0">
-                <i className={`fa-solid fa-terminal ${agentRunning ? 'text-green-400' : 'text-slate-400'}`}></i>
-                <h3 className="section-title">Agent Console</h3>
-              </div>
-              <span className="text-xs text-slate-500">{logs.length} entries</span>
-            </div>
-            <div className="console h-[400px] overflow-y-auto scrollbar-thin">
-              {logs.length === 0 ? (
-                <div className="empty-state h-full">
-                  <i className="fa-solid fa-terminal empty-state-icon"></i>
-                  <p className="empty-state-title">Agent console ready</p>
-                  <p className="empty-state-description">Deploy the agent to see live output</p>
+          {/* Console */}
+          <div className="console h-[420px] overflow-y-auto">
+            {logs.length === 0 ? (
+              <div className="empty-state h-full flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-3xl mb-4 flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
+                  <i className="fa-solid fa-terminal text-2xl" style={{ color: '#475569' }}></i>
                 </div>
-              ) : (
-                logs.map((log, i) => (
-                  <div key={i} className={`console-line ${
-                    log.type === 'success' ? 'console-success' :
-                    log.type === 'error' ? 'console-error' :
-                    log.type === 'warning' ? 'console-warning' :
-                    log.type === 'browser' ? 'console-browser' :
-                    log.type === 'action' ? 'console-action' :
-                    'console-info'
-                  }`}>
-                    {log.message}
-                  </div>
-                ))
-              )}
-              {agentRunning && <span className="animate-pulse text-green-400">▊</span>}
-            </div>
+                <p className="font-semibold" style={{ color: '#94a3b8' }}>Agent console ready</p>
+                <p className="text-xs mt-1" style={{ color: '#475569' }}>Deploy the agent to see live output</p>
+              </div>
+            ) : (
+              logs.map((log, i) => (
+                <div key={i} className={`console-line ${
+                  log.type === 'success' ? 'console-success' :
+                  log.type === 'error' ? 'console-error' :
+                  log.type === 'warning' ? 'console-warning' :
+                  log.type === 'browser' ? 'console-browser' :
+                  log.type === 'action' ? 'console-action' :
+                  'console-info'
+                }`}>
+                  {log.message}
+                </div>
+              ))
+            )}
+            {agentRunning && <span className="animate-pulse text-purple-400">▊</span>}
           </div>
         </div>
       </div>
