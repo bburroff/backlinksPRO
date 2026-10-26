@@ -8,73 +8,66 @@ interface SidebarProps {
 
 export default function Sidebar({ currentPage, setCurrentPage, agentRunning }: SidebarProps) {
   const navItems: { id: Page; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' },
+    { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
     { id: 'sites', label: 'Article Sites', icon: 'fa-globe' },
-    { id: 'evaluator', label: 'Site Evaluator', icon: 'fa-wand-magic-sparkles' },
-    { id: 'generator', label: 'AI Writer', icon: 'fa-feather' },
+    { id: 'evaluator', label: 'Site Evaluator', icon: 'fa-magnifying-glass-chart' },
+    { id: 'generator', label: 'AI Writer', icon: 'fa-robot' },
     { id: 'agent', label: 'Deploy Agent', icon: 'fa-rocket' },
-    { id: 'reports', label: 'Reports', icon: 'fa-chart-simple' },
+    { id: 'reports', label: 'Reports', icon: 'fa-file-lines' },
   ]
 
   return (
-    <aside className="sidebar w-72 flex flex-col h-full">
-      {/* Logo */}
-      <div className="p-6 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
-            background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)'
-          }}>
-            <i className="fa-solid fa-link text-white text-base"></i>
+    <aside className="w-72 glass-card border-r border-white/10 flex flex-col" style={{ borderRadius: 0 }}>
+      <div className="p-8 border-b border-white/10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg glow-purple">
+            <i className="fa-solid fa-link text-white text-xl"></i>
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>LinkForge</h1>
-            <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Article Automation</p>
+            <h1 className="text-xl font-bold gradient-text">LinkForge</h1>
+            <p className="text-xs text-slate-400 mt-0.5">Article Automation</p>
           </div>
         </div>
       </div>
 
-      {/* Agent Status */}
       {agentRunning && (
-        <div className="mx-4 mb-4 p-3 rounded-2xl agent-active border" style={{ borderColor: 'rgba(34, 197, 94, 0.3)' }}>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
-            </div>
-            <span className="text-xs font-semibold text-green-700">Agent Active</span>
+        <div className="mx-6 mt-6 p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 rounded-2xl agent-active">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-sm text-green-300 font-semibold">Agent Active</span>
           </div>
-          <p className="text-xs text-green-600/80 mt-1">Processing submissions...</p>
+          <p className="text-xs text-green-300/70 mt-2">Processing submissions...</p>
         </div>
       )}
 
-      {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className="flex-1 p-6 space-y-2">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setCurrentPage(item.id)}
-            className={`nav-item w-full ${currentPage === item.id ? 'active' : ''}`}
+            className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-semibold transition-all ${
+              currentPage === item.id
+                ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-indigo-400/30 shadow-lg glow-purple'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
           >
-            <i className={`fa-solid ${item.icon} w-5 text-center text-sm`}></i>
-            <span>{item.label}</span>
+            <i className={`fa-solid ${item.icon} w-6 text-center text-lg`}></i>
+            {item.label}
           </button>
         ))}
       </nav>
 
-      {/* User */}
-      <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-black/5 transition-colors cursor-pointer">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{
-            background: 'linear-gradient(135deg, #7c3aed, #ec4899)'
-          }}>
-            U
+      <div className="p-6 border-t border-white/10">
+        <div className="flex items-center gap-4 px-4 py-3 mb-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <i className="fa-solid fa-user text-sm text-white"></i>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate" style={{ color: 'var(--text)' }}>User</p>
-            <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Pro Plan</p>
+          <div>
+            <p className="text-sm font-semibold text-white">User</p>
+            <p className="text-xs text-slate-400">Pro Plan</p>
           </div>
-          <i className="fa-solid fa-ellipsis text-slate-400 text-xs"></i>
         </div>
+        <p className="text-center text-xs text-slate-500">LinkForge v2.0</p>
       </div>
     </aside>
   )

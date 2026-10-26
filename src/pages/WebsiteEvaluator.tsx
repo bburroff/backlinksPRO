@@ -34,7 +34,8 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
       await new Promise(resolve => setTimeout(resolve, 400 + Math.random() * 300))
     }
 
-    setEvaluation(evaluateWebsite(url))
+    const result = evaluateWebsite(url)
+    setEvaluation(result)
     setEvaluating(false)
   }
 
@@ -46,38 +47,27 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
     : []
 
   return (
-    <div className="animate-slide-in max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>AI Powered</span>
-          <div className="h-px w-12" style={{ background: 'var(--accent)' }}></div>
-        </div>
-        <h1 className="display">Site Evaluator<span className="display-serif gradient-text">.</span></h1>
-        <p className="mt-2 text-base" style={{ color: 'var(--text-muted)' }}>
-          Analyze any website and get AI-powered insights for your content strategy
-        </p>
+    <div className="animate-slide-in">
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">AI Site Evaluator</h1>
+        <p className="text-slate-400 text-lg">Enter your website URL and let AI analyze it for optimal article strategy</p>
       </div>
 
-      {/* URL Input */}
-      <div className="card-static p-6 mb-6">
-        <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>Your Website URL</label>
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <i className="fa-solid fa-globe absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--text-faint)' }}></i>
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://yourwebsite.com"
-              className="input pl-11"
-              onKeyDown={(e) => e.key === 'Enter' && evaluateSite()}
-            />
-          </div>
+      <div className="glass-card p-8 mb-8">
+        <label className="block text-sm font-semibold text-slate-300 mb-4">Your Website URL</label>
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://yourwebsite.com"
+            className="input-modern flex-1"
+            onKeyDown={(e) => e.key === 'Enter' && evaluateSite()}
+          />
           <button
             onClick={evaluateSite}
             disabled={evaluating || !url}
-            className="btn-gradient"
+            className="btn-modern flex items-center gap-3 disabled:opacity-50"
           >
             {evaluating ? (
               <>
@@ -86,7 +76,7 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
               </>
             ) : (
               <>
-                <i className="fa-solid fa-wand-magic-sparkles"></i>
+                <i className="fa-solid fa-magnifying-glass-chart"></i>
                 Evaluate
               </>
             )}
@@ -94,19 +84,18 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
         </div>
       </div>
 
-      {/* Progress */}
       {evaluating && (
-        <div className="card-static p-8 mb-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 rounded-3xl flex items-center justify-center float" style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)' }}>
-              <i className="fa-solid fa-brain text-white text-xl"></i>
+        <div className="glass-card p-10 mb-8">
+          <div className="flex items-center gap-5 mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg glow-purple">
+              <i className="fa-solid fa-brain text-white text-2xl animate-pulse"></i>
             </div>
             <div>
-              <h3 className="text-lg font-bold" style={{ color: 'var(--text)' }}>AI Analysis in Progress</h3>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Scanning {url}...</p>
+              <h3 className="text-white font-bold text-xl">AI Analysis in Progress</h3>
+              <p className="text-slate-400 mt-1">Scanning {url}...</p>
             </div>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-4">
             {[
               'Fetching website data...',
               'Analyzing HTML structure & meta tags...',
@@ -117,175 +106,163 @@ export default function WebsiteEvaluator({ sites }: WebsiteEvaluatorProps) {
               'Calculating backlink opportunities...',
               'Compiling final report...',
             ].map((step, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  i < evalStep ? 'bg-green-100' :
-                  i === evalStep ? 'shimmer' :
-                  ''
-                }`} style={i >= evalStep ? { background: 'var(--bg-soft)' } : {}}>
-                  <i className={`fa-solid text-xs ${
-                    i < evalStep ? 'fa-check text-green-600' :
-                    i === evalStep ? 'fa-spinner animate-spin' :
-                    'fa-circle'
-                  }`} style={i >= evalStep && i !== evalStep ? { color: 'var(--text-faint)' } : {}}></i>
-                </div>
-                <span className={`text-sm ${
-                  i < evalStep ? 'font-medium text-green-700' :
-                  i === evalStep ? 'font-medium' :
-                  ''
-                }`} style={{ color: i >= evalStep && i !== evalStep ? 'var(--text-faint)' : 'var(--text)' }}>{step}</span>
+              <div key={i} className="flex items-center gap-4">
+                <i className={`fa-solid ${
+                  i < evalStep ? 'fa-check text-green-400' :
+                  i === evalStep ? 'fa-spinner animate-spin text-indigo-400' :
+                  'fa-circle text-slate-700'
+                } text-lg`}></i>
+                <span className={`text-sm font-medium ${
+                  i < evalStep ? 'text-green-400' :
+                  i === evalStep ? 'text-indigo-400' :
+                  'text-slate-600'
+                }`}>{step}</span>
               </div>
             ))}
           </div>
           <div className="mt-6">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${(evalStep / 8) * 100}%` }}></div>
+            <div className="progress-modern">
+              <div className="progress-fill-modern" style={{ width: `${(evalStep / 8) * 100}%` }}></div>
             </div>
           </div>
         </div>
       )}
 
       {evaluation && !evaluating && (
-        <div className="space-y-4">
-          {/* Site Overview - Bento */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="card-static p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #ec4899)' }}>
-                  <i className="fa-solid fa-chart-simple text-white text-sm"></i>
-                </div>
-                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Site Analysis</h3>
+        <div className="space-y-6">
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-indigo-500 to-purple-600">
+                <i className="fa-solid fa-chart-simple text-white"></i>
               </div>
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                  <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-faint)' }}>Detected Niche</p>
-                  <p className="font-semibold" style={{ color: 'var(--text)' }}>{evaluation.niche}</p>
-                </div>
-                <div className="p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                  <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-faint)' }}>Content Tone</p>
-                  <p className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{evaluation.tone}</p>
-                </div>
+              <h3 className="section-title-modern">Site Analysis</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 bg-white/5 rounded-2xl">
+                <p className="text-xs text-slate-500 mb-2 font-semibold">Detected Niche</p>
+                <p className="text-white font-bold text-lg">{evaluation.niche}</p>
+              </div>
+              <div className="p-5 bg-white/5 rounded-2xl">
+                <p className="text-xs text-slate-500 mb-2 font-semibold">Content Tone</p>
+                <p className="text-white font-bold text-lg">{evaluation.tone}</p>
+              </div>
+              <div className="p-5 bg-white/5 rounded-2xl">
+                <p className="text-xs text-slate-500 mb-2 font-semibold">Target Audience</p>
+                <p className="text-white font-medium">{evaluation.audience}</p>
+              </div>
+              <div className="p-5 bg-white/5 rounded-2xl">
+                <p className="text-xs text-slate-500 mb-2 font-semibold">Estimated Traffic</p>
+                <p className="text-white font-bold text-lg">{evaluation.estimatedTraffic}</p>
               </div>
             </div>
-            
-            <div className="card-static p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #06b6d4, #7c3aed)' }}>
-                  <i className="fa-solid fa-users text-white text-sm"></i>
-                </div>
-                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Audience</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                  <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-faint)' }}>Target Audience</p>
-                  <p className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{evaluation.audience}</p>
-                </div>
-                <div className="p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                  <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-faint)' }}>Estimated Traffic</p>
-                  <p className="font-semibold" style={{ color: 'var(--text)' }}>{evaluation.estimatedTraffic}</p>
-                </div>
-              </div>
+            <div className="mt-6 p-5 bg-white/5 rounded-2xl">
+              <p className="text-xs text-slate-500 mb-2 font-semibold">Description</p>
+              <p className="text-slate-300">{evaluation.description}</p>
             </div>
           </div>
 
-          {/* Keywords */}
-          <div className="card-static p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}>
-                <i className="fa-solid fa-tags text-white text-sm"></i>
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-purple-500 to-pink-600">
+                <i className="fa-solid fa-tags text-white"></i>
               </div>
-              <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Identified Keywords</h3>
+              <h3 className="section-title-modern">Identified Keywords</h3>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {evaluation.keywords.map((kw, i) => (
-                <span key={i} className="badge badge-purple">{kw}</span>
+                <span key={i} className="px-4 py-2 bg-purple-500/20 text-purple-300 rounded-xl text-sm font-semibold border border-purple-400/30">
+                  {kw}
+                </span>
               ))}
             </div>
           </div>
 
-          {/* Content Strategy + Topics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="card-static p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #06b6d4, #3b82f6)' }}>
-                  <i className="fa-solid fa-chess text-white text-sm"></i>
-                </div>
-                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Content Strategy</h3>
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-cyan-500 to-blue-600">
+                <i className="fa-solid fa-chess text-white"></i>
               </div>
-              <div className="space-y-2">
-                {evaluation.contentStrategy.map((strategy, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                    <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #06b6d4, #3b82f6)' }}>{i + 1}</span>
-                    <span className="text-sm" style={{ color: 'var(--text)' }}>{strategy}</span>
-                  </div>
-                ))}
-              </div>
+              <h3 className="section-title-modern">Content Strategy</h3>
             </div>
-
-            <div className="card-static p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)' }}>
-                  <i className="fa-solid fa-lightbulb text-white text-sm"></i>
+            <div className="space-y-3">
+              {evaluation.contentStrategy.map((strategy, i) => (
+                <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl">
+                  <span className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
+                  <span className="text-slate-200 font-medium">{strategy}</span>
                 </div>
-                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Suggested Topics</h3>
-              </div>
-              <div className="space-y-2">
-                {evaluation.suggestedTopics.map((topic, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/[0.02] transition-colors cursor-pointer" style={{ background: 'var(--bg-soft)' }}>
-                    <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)' }}>{i + 1}</span>
-                    <span className="text-sm" style={{ color: 'var(--text)' }}>{topic}</span>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Backlink Opportunities */}
-          <div className="card-static p-6">
-            <div className="flex items-center gap-4">
-              <div className="text-center p-4 rounded-2xl" style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05))' }}>
-                <p className="text-4xl font-bold text-green-600">{evaluation.backlinkOpportunities}</p>
-                <p className="text-xs text-green-700 mt-1">Potential Sites</p>
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-yellow-500 to-orange-600">
+                <i className="fa-solid fa-lightbulb text-white"></i>
+              </div>
+              <h3 className="section-title-modern">AI-Suggested Article Topics</h3>
+            </div>
+            <div className="space-y-3">
+              {evaluation.suggestedTopics.map((topic, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all">
+                  <span className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 text-white rounded-xl flex items-center justify-center text-sm font-bold">{i + 1}</span>
+                  <span className="text-slate-200 font-medium">{topic}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-green-500 to-emerald-600">
+                <i className="fa-solid fa-link text-white"></i>
+              </div>
+              <h3 className="section-title-modern">Backlink Opportunities</h3>
+            </div>
+            <div className="flex items-center gap-8 mb-6">
+              <div className="text-center">
+                <p className="text-5xl font-bold text-green-400">{evaluation.backlinkOpportunities}</p>
+                <p className="text-xs text-slate-500 mt-2 font-semibold">Potential Sites</p>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold tracking-tight mb-2" style={{ color: 'var(--text)' }}>Backlink Opportunities</h3>
-                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                  Based on your niche (<strong style={{ color: 'var(--text)' }}>{evaluation.niche}</strong>), there are approximately <strong style={{ color: 'var(--text)' }}>{evaluation.backlinkOpportunities}</strong> high-quality sites where you could publish articles with backlinks.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {evaluation.competitorSites.map((site, i) => (
-                    <span key={i} className="badge badge-neutral">{site}</span>
-                  ))}
-                </div>
+                <p className="text-slate-300">Based on your niche (<strong className="text-white">{evaluation.niche}</strong>), there are approximately <strong className="text-green-400">{evaluation.backlinkOpportunities}</strong> high-quality sites where you could publish articles with backlinks.</p>
+              </div>
+            </div>
+            <div className="p-5 bg-white/5 rounded-2xl">
+              <p className="text-xs text-slate-500 mb-3 font-semibold">Competitor sites in your niche:</p>
+              <div className="flex flex-wrap gap-2">
+                {evaluation.competitorSites.map((site, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-white/10 text-slate-300 rounded-xl text-sm font-medium">{site}</span>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Matching Sites */}
-          {matchingSites.length > 0 && (
-            <div className="card-static p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)' }}>
-                  <i className="fa-solid fa-bullseye text-white text-sm"></i>
-                </div>
-                <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Best Matching Sites ({matchingSites.length})</h3>
+          <div className="glass-card p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="icon-container bg-gradient-to-br from-green-500 to-emerald-600">
+                <i className="fa-solid fa-bullseye text-white"></i>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <h3 className="section-title-modern">Best Matching Sites ({matchingSites.length})</h3>
+            </div>
+            {matchingSites.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matchingSites.map((site) => (
-                  <div key={site.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-green-100">
-                      <i className="fa-solid fa-check text-green-600 text-xs"></i>
+                  <div key={site.id} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg glow-green">
+                      <i className="fa-solid fa-check text-white"></i>
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{site.name}</p>
-                      <p className="text-xs" style={{ color: 'var(--text-faint)' }}>DA {site.da} • {site.category}</p>
+                      <p className="text-white font-bold">{site.name}</p>
+                      <p className="text-xs text-slate-500 mt-1">DA {site.da} • {site.category}</p>
                     </div>
-                    <span className="badge badge-success">Good Match</span>
+                    <span className="badge-modern badge-success-modern">Good Match</span>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-slate-400 text-center py-8">No matching sites found in your list.</p>
+            )}
+          </div>
         </div>
       )}
     </div>

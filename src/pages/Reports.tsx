@@ -48,96 +48,94 @@ export default function Reports({ submissions }: ReportsProps) {
   }
 
   const copyAllLinks = () => {
-    navigator.clipboard.writeText(published.map(s => s.publishedUrl).join('\n'))
+    const links = published.map(s => s.publishedUrl).join('\n')
+    navigator.clipboard.writeText(links)
   }
 
   return (
-    <div className="animate-slide-in max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-8">
+    <div className="animate-slide-in">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Analytics</span>
-            <div className="h-px w-12" style={{ background: 'var(--accent)' }}></div>
-          </div>
-          <h1 className="display">Reports<span className="display-serif gradient-text">.</span></h1>
-          <p className="mt-2 text-base" style={{ color: 'var(--text-muted)' }}>
-            Track all submissions and published article links
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Reports</h1>
+          <p className="text-slate-400 text-lg">Track all submissions and published article links</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={copyAllLinks} disabled={published.length === 0} className="btn-secondary disabled:opacity-50">
-            <i className="fa-solid fa-copy"></i>Copy URLs
+        <div className="flex gap-3">
+          <button onClick={copyAllLinks} disabled={published.length === 0} className="btn-secondary-modern flex items-center gap-2 disabled:opacity-50">
+            <i className="fa-solid fa-copy"></i>
+            Copy URLs
           </button>
-          <button onClick={exportCSV} disabled={submissions.length === 0} className="btn-primary disabled:opacity-50">
-            <i className="fa-solid fa-download"></i>Export CSV
+          <button onClick={exportCSV} disabled={submissions.length === 0} className="btn-modern flex items-center gap-2 disabled:opacity-50">
+            <i className="fa-solid fa-download"></i>
+            Export CSV
           </button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-        <div className="stat-card">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }}>
-              <i className="fa-solid fa-paper-plane text-white text-sm"></i>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="stat-card-modern">
+          <div className="flex items-center gap-4">
+            <div className="icon-container bg-gradient-to-br from-blue-500 to-cyan-600">
+              <i className="fa-solid fa-paper-plane text-white"></i>
             </div>
             <div>
-              <p className="text-2xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>{submissions.length}</p>
-              <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Total</p>
+              <p className="text-3xl font-bold text-white">{submissions.length}</p>
+              <p className="text-xs text-slate-400 font-semibold mt-1">Total Submissions</p>
             </div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)' }}>
-              <i className="fa-solid fa-check text-white text-sm"></i>
+        <div className="stat-card-modern">
+          <div className="flex items-center gap-4">
+            <div className="icon-container bg-gradient-to-br from-green-500 to-emerald-600">
+              <i className="fa-solid fa-check-circle text-white"></i>
             </div>
             <div>
-              <p className="text-2xl font-bold tracking-tight text-green-600">{published.length}</p>
-              <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Published</p>
+              <p className="text-3xl font-bold text-white">{published.length}</p>
+              <p className="text-xs text-slate-400 font-semibold mt-1">Published</p>
             </div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)' }}>
-              <i className="fa-solid fa-clock text-white text-sm"></i>
+        <div className="stat-card-modern">
+          <div className="flex items-center gap-4">
+            <div className="icon-container bg-gradient-to-br from-yellow-500 to-amber-600">
+              <i className="fa-solid fa-clock text-white"></i>
             </div>
             <div>
-              <p className="text-2xl font-bold tracking-tight text-amber-600">{pending.length}</p>
-              <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Pending</p>
+              <p className="text-3xl font-bold text-white">{pending.length}</p>
+              <p className="text-xs text-slate-400 font-semibold mt-1">In Progress</p>
             </div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ef4444, #f97316)' }}>
-              <i className="fa-solid fa-xmark text-white text-sm"></i>
+        <div className="stat-card-modern">
+          <div className="flex items-center gap-4">
+            <div className="icon-container bg-gradient-to-br from-red-500 to-pink-600">
+              <i className="fa-solid fa-xmark text-white"></i>
             </div>
             <div>
-              <p className="text-2xl font-bold tracking-tight text-red-600">{failed.length}</p>
-              <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Failed</p>
+              <p className="text-3xl font-bold text-white">{failed.length}</p>
+              <p className="text-xs text-slate-400 font-semibold mt-1">Failed</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--text-faint)' }}></i>
-          <input type="text" placeholder="Search submissions..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="input pl-11" />
-        </div>
-        <div className="flex gap-1 p-1 rounded-2xl" style={{ background: 'var(--bg-soft)' }}>
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <input
+          type="text"
+          placeholder="Search by site or article title..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input-modern flex-1"
+        />
+        <div className="flex gap-3">
           {['all', 'published', 'pending', 'failed'].map(status => (
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-xl text-xs font-medium capitalize transition-all ${
-                filterStatus === status ? 'bg-white shadow-sm font-semibold' : 'hover:bg-white/50'
+              className={`px-5 py-3 rounded-xl text-xs font-bold capitalize transition-all ${
+                filterStatus === status
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg glow-purple'
+                  : 'glass-card text-slate-400 hover:text-white'
               }`}
-              style={{ color: filterStatus === status ? 'var(--text)' : 'var(--text-muted)' }}
             >
               {status}
             </button>
@@ -145,77 +143,82 @@ export default function Reports({ submissions }: ReportsProps) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="table-container">
+      <div className="glass-card overflow-hidden">
         {filteredSubmissions.length === 0 ? (
-          <div className="empty-state py-16">
-            <div className="w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'var(--bg-soft)' }}>
-              <i className="fa-solid fa-file-lines text-2xl" style={{ color: 'var(--text-faint)' }}></i>
-            </div>
-            <p className="font-semibold" style={{ color: 'var(--text-muted)' }}>No submissions yet</p>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>Deploy the agent to start submitting articles</p>
+          <div className="empty-state-modern py-20">
+            <i className="fa-solid fa-file-lines empty-state-icon-modern"></i>
+            <p className="text-slate-400 text-lg font-semibold mb-2">No submissions yet</p>
+            <p className="text-slate-500 text-sm">Deploy the agent to start submitting articles</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="table-modern">
               <thead>
-                <tr style={{ background: 'var(--bg-soft)' }}>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Site</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Article</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Published URL</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Status</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Date</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Actions</th>
+                <tr>
+                  <th>Site</th>
+                  <th>Article</th>
+                  <th>Published URL</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredSubmissions.slice().reverse().map((sub) => (
                   <>
-                    <tr key={sub.id} className="table-row">
-                      <td className="px-6 py-4">
+                    <tr key={sub.id}>
+                      <td>
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--bg-soft)' }}>
-                            <i className="fa-solid fa-globe text-xs" style={{ color: 'var(--text-faint)' }}></i>
+                          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <i className="fa-solid fa-globe text-xs text-white"></i>
                           </div>
                           <div>
-                            <span className="text-sm font-semibold block" style={{ color: 'var(--text)' }}>{sub.siteName}</span>
-                            <span className="text-xs" style={{ color: 'var(--text-faint)' }}>@{sub.username}</span>
+                            <span className="text-sm text-white font-bold block">{sub.siteName}</span>
+                            <span className="text-xs text-slate-500">@{sub.username}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm max-w-[200px] truncate" style={{ color: 'var(--text)' }}>{sub.articleTitle}</p>
+                      <td>
+                        <p className="text-sm text-slate-300 max-w-[200px] truncate font-medium">{sub.articleTitle}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td>
                         {sub.publishedUrl ? (
-                          <a href={sub.publishedUrl} target="_blank" rel="noopener noreferrer" className="text-sm max-w-[200px] truncate block">
+                          <a href={sub.publishedUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-400 hover:underline max-w-[200px] truncate block font-medium">
                             {sub.publishedUrl.replace(/https?:\/\//, '').substring(0, 40)}...
                           </a>
                         ) : (
-                          <span className="text-sm" style={{ color: 'var(--text-faint)' }}>—</span>
+                          <span className="text-sm text-slate-500">—</span>
                         )}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`badge ${
-                          sub.status === 'published' ? 'badge-success' :
-                          sub.status === 'failed' ? 'badge-error' :
-                          'badge-warning'
+                      <td>
+                        <span className={`badge-modern ${
+                          sub.status === 'published' ? 'badge-success-modern' :
+                          sub.status === 'failed' ? 'badge-error-modern' :
+                          'badge-warning-modern'
                         }`}>
                           {sub.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{new Date(sub.submittedAt).toLocaleDateString()}</span>
+                      <td>
+                        <span className="text-sm text-slate-400 font-medium">{new Date(sub.submittedAt).toLocaleDateString()}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1">
+                      <td>
+                        <div className="flex items-center gap-3">
                           {sub.publishedUrl && (
-                            <button onClick={() => navigator.clipboard.writeText(sub.publishedUrl)} className="btn-ghost text-xs py-1 px-2" title="Copy URL">
+                            <button
+                              onClick={() => navigator.clipboard.writeText(sub.publishedUrl)}
+                              className="text-slate-400 hover:text-white transition-all"
+                              title="Copy URL"
+                            >
                               <i className="fa-solid fa-copy"></i>
                             </button>
                           )}
                           {sub.steps && sub.steps.length > 0 && (
-                            <button onClick={() => setShowSteps(showSteps === sub.id ? null : sub.id)} className="btn-ghost text-xs py-1 px-2" title="View steps">
+                            <button
+                              onClick={() => setShowSteps(showSteps === sub.id ? null : sub.id)}
+                              className="text-slate-400 hover:text-indigo-400 transition-all"
+                              title="View steps"
+                            >
                               <i className="fa-solid fa-list-check"></i>
                             </button>
                           )}
@@ -224,17 +227,17 @@ export default function Reports({ submissions }: ReportsProps) {
                     </tr>
                     {showSteps === sub.id && sub.steps && (
                       <tr key={`${sub.id}-steps`}>
-                        <td colSpan={6} className="px-6 py-4" style={{ background: 'var(--bg-soft)' }}>
-                          <div className="space-y-1 font-mono text-xs max-h-48 overflow-y-auto">
+                        <td colSpan={6} className="p-6 bg-white/5">
+                          <div className="space-y-2 font-mono text-xs max-h-60 overflow-y-auto">
                             {sub.steps.map((step, i) => (
-                              <div key={i} className={`flex items-center gap-2 ${
-                                step.status === 'success' ? 'text-green-600' :
-                                step.status === 'error' ? 'text-red-600' :
-                                step.status === 'warning' ? 'text-amber-600' :
-                                ''
-                              }`} style={step.status === 'info' ? { color: 'var(--text-muted)' } : {}}>
-                                <span style={{ color: 'var(--text-faint)' }}>{new Date(step.timestamp).toLocaleTimeString()}</span>
-                                <span style={{ color: 'var(--accent)' }}>[{step.action}]</span>
+                              <div key={i} className={`flex items-center gap-3 ${
+                                step.status === 'success' ? 'text-green-400' :
+                                step.status === 'error' ? 'text-red-400' :
+                                step.status === 'warning' ? 'text-yellow-400' :
+                                'text-slate-400'
+                              }`}>
+                                <span className="text-slate-600 font-semibold">{new Date(step.timestamp).toLocaleTimeString()}</span>
+                                <span className="text-indigo-400 font-bold">[{step.action}]</span>
                                 <span>{step.detail}</span>
                               </div>
                             ))}
@@ -250,27 +253,28 @@ export default function Reports({ submissions }: ReportsProps) {
         )}
       </div>
 
-      {/* Published Links */}
       {published.length > 0 && (
-        <div className="card-static p-6 mt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)' }}>
-              <i className="fa-solid fa-link text-white text-sm"></i>
+        <div className="glass-card p-8 mt-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="icon-container bg-gradient-to-br from-green-500 to-emerald-600">
+              <i className="fa-solid fa-link text-white"></i>
             </div>
-            <h3 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text)' }}>Published Links</h3>
-            <span className="badge badge-success">{published.length}</span>
+            <h3 className="section-title-modern">Published Article Links ({published.length})</h3>
           </div>
-          <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+          <div className="space-y-3 max-h-80 overflow-y-auto">
             {published.map((sub) => (
-              <div key={sub.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-soft)' }}>
-                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                  <i className="fa-solid fa-circle-check text-green-600 text-xs"></i>
+              <div key={sub.id} className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition-all">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg glow-green">
+                  <i className="fa-solid fa-circle-check text-white"></i>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{sub.articleTitle}</p>
-                  <a href={sub.publishedUrl} target="_blank" rel="noopener noreferrer" className="text-xs truncate block">{sub.publishedUrl}</a>
+                  <p className="text-sm text-white font-bold truncate">{sub.articleTitle}</p>
+                  <a href={sub.publishedUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-400 hover:underline truncate block mt-1 font-medium">
+                    {sub.publishedUrl}
+                  </a>
+                  <p className="text-xs text-slate-600 mt-1">Backlink → {sub.backlinkUrl}</p>
                 </div>
-                <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{sub.siteName}</span>
+                <span className="text-xs text-slate-500 font-semibold">{sub.siteName}</span>
               </div>
             ))}
           </div>

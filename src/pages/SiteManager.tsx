@@ -72,63 +72,74 @@ export default function SiteManager({ sites, setSites }: SiteManagerProps) {
   }
 
   return (
-    <div className="animate-slide-in max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-8">
+    <div className="animate-slide-in">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Manage</span>
-            <div className="h-px w-12" style={{ background: 'var(--accent)' }}></div>
-          </div>
-          <h1 className="display">Article Sites<span className="display-serif gradient-text">.</span></h1>
-          <p className="mt-2 text-base" style={{ color: 'var(--text-muted)' }}>
-            {sites.length} sites ready for publishing
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Article Submission Sites</h1>
+          <p className="text-slate-400 text-lg">Manage sites where articles will be published ({sites.length} total)</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setBulkMode(!bulkMode)} className="btn-secondary">
-            <i className="fa-solid fa-layer-group"></i>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setBulkMode(!bulkMode)}
+            className="btn-secondary-modern flex items-center gap-2"
+          >
+            <i className="fa-solid fa-list"></i>
             Bulk Add
           </button>
-          <button onClick={() => setShowAddForm(!showAddForm)} className="btn-primary">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="btn-modern flex items-center gap-2"
+          >
             <i className="fa-solid fa-plus"></i>
             Add Site
           </button>
         </div>
       </div>
 
-      {/* Bulk Add */}
       {bulkMode && (
-        <div className="card-static p-6 mb-6 animate-slide-in">
-          <h3 className="text-lg font-bold tracking-tight mb-2" style={{ color: 'var(--text)' }}>Bulk Import Sites</h3>
-          <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-            Enter one site per line. Format: <code className="px-2 py-0.5 rounded-md text-xs font-mono" style={{ background: 'var(--bg-soft)', color: 'var(--accent)' }}>Name, URL, Category</code>
-          </p>
+        <div className="glass-card p-8 mb-8 animate-slide-in">
+          <h3 className="text-xl font-bold text-white mb-4">Bulk Import Sites</h3>
+          <p className="text-slate-400 mb-4">Enter one site per line. Format: <code className="text-indigo-400 bg-white/5 px-2 py-1 rounded-lg">Name, URL, Category</code></p>
           <textarea
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
-            className="input h-40 font-mono resize-none"
+            className="input-modern h-40 font-mono resize-none"
             placeholder={`Medium, https://medium.com, General
 HubPages, https://hubpages.com, General
 Dev.to, https://dev.to, Technology`}
           />
-          <div className="flex justify-end gap-2 mt-4">
-            <button onClick={() => setBulkMode(false)} className="btn-ghost">Cancel</button>
-            <button onClick={addBulkSites} className="btn-primary">
+          <div className="flex justify-end gap-3 mt-6">
+            <button onClick={() => setBulkMode(false)} className="btn-secondary-modern">Cancel</button>
+            <button onClick={addBulkSites} className="btn-modern">
               Import {bulkText.split('\n').filter(l => l.trim()).length} Sites
             </button>
           </div>
         </div>
       )}
 
-      {/* Add Form */}
       {showAddForm && (
-        <div className="card-static p-6 mb-6 animate-slide-in">
-          <h3 className="text-lg font-bold tracking-tight mb-4" style={{ color: 'var(--text)' }}>Add New Site</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input type="text" placeholder="Site Name" value={newSite.name} onChange={(e) => setNewSite({ ...newSite, name: e.target.value })} className="input" />
-            <input type="text" placeholder="https://example.com" value={newSite.url} onChange={(e) => setNewSite({ ...newSite, url: e.target.value })} className="input" />
-            <select value={newSite.category} onChange={(e) => setNewSite({ ...newSite, category: e.target.value })} className="input">
+        <div className="glass-card p-8 mb-8 animate-slide-in">
+          <h3 className="text-xl font-bold text-white mb-6">Add New Site</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              type="text"
+              placeholder="Site Name"
+              value={newSite.name}
+              onChange={(e) => setNewSite({ ...newSite, name: e.target.value })}
+              className="input-modern"
+            />
+            <input
+              type="text"
+              placeholder="URL (e.g., https://example.com)"
+              value={newSite.url}
+              onChange={(e) => setNewSite({ ...newSite, url: e.target.value })}
+              className="input-modern"
+            />
+            <select
+              value={newSite.category}
+              onChange={(e) => setNewSite({ ...newSite, category: e.target.value })}
+              className="input-modern"
+            >
               <option>General</option>
               <option>Technology</option>
               <option>Business</option>
@@ -137,36 +148,33 @@ Dev.to, https://dev.to, Technology`}
               <option>Education</option>
             </select>
           </div>
-          <div className="flex justify-end gap-2 mt-4">
-            <button onClick={() => setShowAddForm(false)} className="btn-ghost">Cancel</button>
-            <button onClick={addSite} className="btn-primary">Add Site</button>
+          <div className="flex justify-end gap-3 mt-6">
+            <button onClick={() => setShowAddForm(false)} className="btn-secondary-modern">Cancel</button>
+            <button onClick={addSite} className="btn-modern">Add Site</button>
           </div>
         </div>
       )}
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--text-faint)' }}></i>
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex-1">
           <input
             type="text"
             placeholder="Search sites..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input pl-11"
+            className="input-modern"
           />
         </div>
-        <div className="flex gap-1.5 flex-wrap p-1 rounded-2xl" style={{ background: 'var(--bg-soft)' }}>
+        <div className="flex gap-2 flex-wrap">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              className={`px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                 filterCategory === cat 
-                  ? 'bg-white shadow-sm font-semibold' 
-                  : 'hover:bg-white/50'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg glow-purple' 
+                  : 'glass-card text-slate-400 hover:text-white'
               }`}
-              style={{ color: filterCategory === cat ? 'var(--text)' : 'var(--text-muted)' }}
             >
               {cat}
             </button>
@@ -174,44 +182,38 @@ Dev.to, https://dev.to, Technology`}
         </div>
       </div>
 
-      {/* Sites Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredSites.map((site) => (
-          <div key={site.id} className="card p-5 group">
-            <div className="flex items-start justify-between mb-3">
+          <div key={site.id} className="glass-card p-6 group">
+            <div className="flex items-start justify-between mb-4">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold truncate" style={{ color: 'var(--text)' }}>{site.name}</h3>
-                  <span className={`w-1.5 h-1.5 rounded-full ${site.status === 'active' ? 'bg-green-500' : 'bg-slate-300'}`}></span>
-                </div>
-                <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>{site.url}</p>
+                <h3 className="text-white font-bold text-lg truncate">{site.name}</h3>
+                <p className="text-xs text-slate-500 truncate mt-1">{site.url}</p>
               </div>
+              <span className={`ml-3 w-3 h-3 rounded-full ${site.status === 'active' ? 'bg-green-400 shadow-lg glow-green' : 'bg-slate-500'}`}></span>
             </div>
-            <div className="flex items-center gap-1.5 mb-4 flex-wrap">
-              <span className="badge badge-neutral">{site.category}</span>
-              <span className="badge badge-purple">DA {site.da}</span>
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              <span className="badge-modern bg-white/10 text-slate-300 border-white/20">{site.category}</span>
+              <span className="badge-modern bg-indigo-500/20 text-indigo-300 border-indigo-400/30">DA {site.da}</span>
+              <span className="badge-modern bg-white/10 text-slate-400 border-white/20 capitalize">{site.signupMethod}</span>
               {site.requiresApproval && (
-                <span className="badge badge-warning">Approval</span>
+                <span className="badge-modern bg-amber-500/20 text-amber-300 border-amber-400/30">Approval</span>
               )}
             </div>
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => toggleStatus(site.id)} className="btn-ghost text-xs py-1 px-2">
+            <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all">
+              <button onClick={() => toggleStatus(site.id)} className="text-xs text-slate-400 hover:text-white font-semibold">
                 {site.status === 'active' ? '⏸ Disable' : '▶ Enable'}
               </button>
-              <button onClick={() => removeSite(site.id)} className="btn-ghost text-xs py-1 px-2 text-red-500 hover:text-red-600">
-                Remove
-              </button>
+              <button onClick={() => removeSite(site.id)} className="text-xs text-red-400 hover:text-red-300 font-semibold">🗑 Remove</button>
             </div>
           </div>
         ))}
       </div>
 
       {filteredSites.length === 0 && (
-        <div className="empty-state">
-          <div className="w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'var(--bg-soft)' }}>
-            <i className="fa-solid fa-globe text-2xl" style={{ color: 'var(--text-faint)' }}></i>
-          </div>
-          <p className="font-semibold" style={{ color: 'var(--text-muted)' }}>No sites found</p>
+        <div className="empty-state-modern">
+          <i className="fa-solid fa-globe empty-state-icon-modern"></i>
+          <p className="text-slate-400 text-lg font-semibold">No sites found</p>
         </div>
       )}
     </div>
